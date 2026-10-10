@@ -1,0 +1,315 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>Informe_chucking_embeddings</title><style>body{margin:0;background:#eef2f6;color:#17253a;font:17px/1.6 Arial,sans-serif}
+    main{max-width:1080px;margin:30px auto;padding:36px 48px;background:white}
+    h1,h2,h3,h4{line-height:1.25;color:#12304f}h2{margin-top:44px;border-bottom:2px solid #ccd8e3;padding-bottom:10px}
+    img{display:block;max-width:100%;height:auto;border:1px solid #d5dce5;margin:22px 0}
+    pre{background:#f2f5f8;padding:18px;overflow:auto;line-height:1.5}code{font-family:Consolas,monospace}
+    table{border-collapse:collapse;width:100%;font-size:15px}td,th{border:1px solid #ccd5df;padding:10px;text-align:left}
+    a{color:#125993} @media print{main{margin:0;padding:0}h2,h3,h4{break-after:avoid}img{break-inside:avoid}}</style><main><h1>Informe del proyecto de fragmentación, embeddings y base vectorial</h1>
+<p><strong>Proyecto:</strong> <code>rag-chunking-embeddings-vectordb</code><br />
+<strong>Fuente aplicada:</strong> Manual del Programa de Mantenimiento Preventivo de turbinas SGT-800 y SST-400<br />
+<strong>Fecha de documentación:</strong> 10 de octubre de 2026<br />
+<strong>Entorno:</strong> Windows, Python 3.12.15 y ejecución local en CPU</p>
+<h2>1. Introducción</h2>
+<p>El proyecto organiza el contenido del Manual del Programa de Mantenimiento Preventivo para permitir su consulta mediante preguntas escritas. Lee el documento, lo divide en partes, representa cada parte con números y guarda esas representaciones en una base local. Cuando una persona pregunta, el programa busca las partes del manual que tienen mayor relación con esa pregunta.</p>
+<p>La aplicación muestra fragmentos y su fuente. Su alcance termina en la recuperación de información: no utiliza un modelo de lenguaje para redactar una respuesta nueva. Esta diferencia permite revisar directamente el texto del manual antes de interpretar sus datos.</p>
+<p>La adaptación realizada utiliza el manual como fuente activa, cambia la configuración del modelo de vectores, crea una colección específica y añade una aplicación web con preguntas sobre mantenimiento. Este informe explica el funcionamiento y presenta evidencia de la ejecución.</p>
+<h2>2. Objetivos</h2>
+<h3>2.1. Objetivo general</h3>
+<p>Implementar y documentar una aplicación local que recupere información del manual de mantenimiento preventivo mediante la búsqueda de fragmentos relacionados con una pregunta.</p>
+<h3>2.2. Objetivos específicos</h3>
+<ol>
+<li>Preparar un entorno de Python separado para el proyecto.</li>
+<li>Leer el manual y conservar el archivo de origen de cada fragmento.</li>
+<li>Dividir el contenido con un tamaño y un solapamiento definidos.</li>
+<li>Crear vectores mediante un modelo multilingüe ejecutado localmente.</li>
+<li>Guardar los vectores en Chroma y consultar la colección del manual.</li>
+<li>Presentar los resultados en una aplicación web y en la terminal.</li>
+<li>Registrar capturas, resultados y consumo medido del modelo.</li>
+</ol>
+<h2>3. Marco Teórico</h2>
+<h3>3.1. Ingesta de documentos</h3>
+<p>La ingesta es la lectura y preparación de archivos para su uso en la aplicación. En este proyecto se admiten archivos de texto, Markdown y PDF. Markdown es un formato de texto que permite escribir títulos, listas y tablas. El manual utilizado está en ese formato.</p>
+<h3>3.2. Fragmentación del texto</h3>
+<p>La fragmentación, denominada <em>chunking</em> en el código, consiste en dividir un documento en partes. El solapamiento repite una porción del texto anterior en el fragmento siguiente. Su propósito es conservar información que podría quedar separada en un corte.</p>
+<p>La estrategia principal prueba separadores de párrafo, línea, oración y palabra. También existen funciones para separar por cambios de tema y para guardar fragmentos pequeños con un texto mayor relacionado. La ejecución documentada utiliza la estrategia principal, llamada <code>recursive</code>.</p>
+<h3>3.3. Embeddings o vectores de texto</h3>
+<p>Un embedding es una lista de números calculada por un modelo a partir del texto. Estos números permiten comparar preguntas y fragmentos. El modelo utilizado es multilingüe y puede procesar el contenido en español. En esta ejecución cada vector tiene 384 valores. La normalización ajusta la longitud numérica del vector para facilitar su comparación con otros vectores.</p>
+<p>Los documentos y las preguntas deben utilizar el mismo modelo. Si se cambia el modelo, se debe volver a crear la base. El manual se utiliza como contenido de consulta; no se realizó entrenamiento del modelo con sus datos.</p>
+<h3>3.4. Base vectorial y similitud</h3>
+<p>Chroma almacena los vectores, el texto y datos de origen. En este caso conserva los datos en archivos locales para reutilizarlos después de cerrar la aplicación. La comparación utiliza la distancia de coseno; el código muestra la similitud como uno menos esa distancia.</p>
+<p>El valor de similitud sirve para ordenar resultados. No representa la probabilidad de que una afirmación sea correcta. El parámetro <code>top_k</code> indica cuántos fragmentos se devuelven.</p>
+<h3>3.5. Relación con RAG</h3>
+<p>RAG es una forma de preparar respuestas mediante recuperación de información y generación de texto. Este proyecto implementa la lectura, fragmentación, creación de vectores, almacenamiento y recuperación. La generación se realiza en el otro proyecto, denominado <code>rag-knowledge-pipeline</code>.</p>
+<h2>4. Implementación Aplicada</h2>
+<h3>4.1. Entorno de trabajo en Visual Studio Code</h3>
+<p>El directorio de trabajo es <code>C:\Users\Usuario\Desktop\TrabFin ModII</code>. En Visual Studio Code se debe seleccionar <strong>Archivo &gt; Abrir carpeta</strong> y abrir este directorio. El proyecto de este informe se encuentra en <code>rag-chunking-embeddings-vectordb\rag-chunking-embeddings-vectordb</code>. La carpeta exterior contiene la carpeta interna del proyecto; los comandos deben ejecutarse en la carpeta interna, donde está el archivo de configuración.</p>
+<p>Los archivos se modificaron y las aplicaciones se ejecutaron mediante herramientas de archivos y PowerShell. Esta sección documenta cómo revisar y reproducir ese trabajo en Visual Studio Code. Las imágenes del código son vistas documentales de archivos reales; no se presentan como capturas nativas del editor. Las imágenes de la aplicación sí corresponden a su ejecución real en un navegador de prueba.</p>
+<p>Para revisar el código, abrir el archivo desde el panel <strong>Explorador</strong>. Usar <strong>Ctrl+G</strong> para ir a la línea indicada en cada evidencia. Para ejecutar los comandos, abrir <strong>Terminal &gt; Nueva terminal</strong>. Para revisar este informe con sus imágenes, abrir <code>Docs/Informe.md</code> y usar <strong>Ctrl+Shift+V</strong>.</p>
+<p>El equipo tenía Python 3.14. Se instaló Python 3.12.15 en <code>.runtime</code>, dentro del directorio de trabajo, para usar una versión compatible con las dependencias. Cada proyecto tiene su propio entorno <code>.venv</code>. Desde la raíz del trabajo, la instalación realizada se puede reproducir con:</p>
+<pre><code class="language-powershell">python -m pip install --target .tools uv
+$env:UV_PYTHON_INSTALL_DIR = Join-Path $PWD '.runtime'
+$env:UV_CACHE_DIR = Join-Path $PWD '.cache/uv'
+&amp; '.tools/bin/uv.exe' python install 3.12
+&amp; '.tools/bin/uv.exe' venv --python '.runtime/cpython-3.12.15-windows-x86_64-none/python.exe' 'rag-chunking-embeddings-vectordb\rag-chunking-embeddings-vectordb/.venv'
+&amp; '.tools/bin/uv.exe' pip install --python 'rag-chunking-embeddings-vectordb\rag-chunking-embeddings-vectordb/.venv/Scripts/python.exe' -r 'rag-chunking-embeddings-vectordb\rag-chunking-embeddings-vectordb/requirements-lock.txt'
+</code></pre>
+<p><code>uv</code> es la herramienta utilizada para instalar Python y las bibliotecas. <code>requirements.txt</code> establece las dependencias admitidas. <code>requirements-lock.txt</code> registra las versiones instaladas. La primera instalación necesita conexión a Internet.</p>
+<p>En Visual Studio Code, abrir <strong>Ctrl+Shift+P &gt; Python: Select Interpreter</strong> y seleccionar el archivo <code>.venv\Scripts\python.exe</code> de este proyecto. Esta opción requiere la extensión Python del editor. Si la extensión no está disponible, los comandos siguientes siguen indicando de forma expresa el archivo de Python que deben utilizar.</p>
+<p>Antes de ejecutar las consultas, ubicar la terminal en la carpeta del proyecto y definir la ubicación del modelo descargado:</p>
+<pre><code class="language-powershell">Set-Location 'C:\Users\Usuario\Desktop\TrabFin ModII\rag-chunking-embeddings-vectordb\rag-chunking-embeddings-vectordb'
+$env:HF_HOME = 'C:\Users\Usuario\Desktop\TrabFin ModII\.cache\huggingface'
+$env:HF_HUB_OFFLINE = '1'
+$env:PYTHONUTF8 = '1'
+</code></pre>
+<p>El modo sin conexión indicado funciona porque el modelo ya fue descargado. Para una primera descarga se debe quitar esa variable con <code>Remove-Item Env:HF_HUB_OFFLINE -ErrorAction SilentlyContinue</code>. Esta instrucción elimina la variable de la terminal, no archivos del proyecto.</p>
+<p>Las bibliotecas principales instaladas fueron Sentence Transformers 6.1.0, PyTorch 2.14.1, Chroma 1.5.9 y Streamlit 1.65.0. Las versiones exactas y las demás dependencias están en <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/requirements-lock.txt">requirements-lock.txt</a>.</p>
+<h3>4.2. Organización y cambios realizados</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo o carpeta</th>
+<th>Función aplicada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data/documentos/</code></td>
+<td>Contiene el manual usado por la ingesta.</td>
+</tr>
+<tr>
+<td><code>data/ejemplos/</code></td>
+<td>Conserva el ejemplo sobre RAG fuera de la fuente activa.</td>
+</tr>
+<tr>
+<td><code>config.py</code></td>
+<td>Define rutas, modelo, colección, tamaños y cantidad de resultados.</td>
+</tr>
+<tr>
+<td><code>src/utils.py</code></td>
+<td>Lee los documentos y registra su fuente.</td>
+</tr>
+<tr>
+<td><code>src/chunking.py</code></td>
+<td>Implementa las tres estrategias de división del texto.</td>
+</tr>
+<tr>
+<td><code>src/embeddings.py</code></td>
+<td>Carga el modelo y obtiene vectores normalizados.</td>
+</tr>
+<tr>
+<td><code>src/vector_store.py</code></td>
+<td>Guarda y consulta los fragmentos en Chroma.</td>
+</tr>
+<tr>
+<td><code>src/ingest.py</code></td>
+<td>Ejecuta la ingesta completa desde la terminal.</td>
+</tr>
+<tr>
+<td><code>src/query.py</code></td>
+<td>Recupera fragmentos para una pregunta.</td>
+</tr>
+<tr>
+<td><code>app.py</code></td>
+<td>Presenta el buscador web.</td>
+</tr>
+<tr>
+<td><code>consultas_manual.py</code></td>
+<td>Ejecuta las ocho preguntas y guarda resultados.</td>
+</tr>
+</tbody>
+</table>
+<p>La colección se cambió a <code>manual_mantenimiento_preventivo</code>. El modelo activo se cambió de la opción original BGE a <code>sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</code>. Se añadieron Streamlit y <code>app.py</code>, las preguntas aplicadas al mantenimiento, los accesos de ejecución y el registro de resultados. Referencias: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/config.py">config.py</a>, líneas 18–46 y <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/app.py">app.py</a>, líneas 1–35.</p>
+<p>El tamaño configurado es 128 tokens aproximados y el solapamiento 25. La función multiplica esos valores por cuatro: trabaja con 512 caracteres y 100 caracteres de solapamiento. Este cálculo no cuenta tokens exactos del modelo. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/chunking.py">src/chunking.py</a>, líneas 43–56.</p>
+<h3>4.3. Funcionamiento paso a paso</h3>
+<ol>
+<li><strong>Leer la carpeta de documentos.</strong> <code>load_documents</code> busca archivos admitidos y lee su contenido. Para cada documento guarda el texto y la ruta de origen. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/utils.py">src/utils.py</a>, líneas 16–47.</li>
+<li><strong>Cargar el modelo.</strong> <code>EmbeddingModel</code> crea una instancia de Sentence Transformer en CPU. La primera ejecución descarga el modelo; las siguientes usan la caché local. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/embeddings.py">src/embeddings.py</a>, líneas 22–37.</li>
+<li><strong>Dividir el manual.</strong> La estrategia <code>recursive</code> genera fragmentos con separadores de texto y conserva la fuente, el nombre de la estrategia y un índice. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/chunking.py">src/chunking.py</a>, líneas 32–63.</li>
+<li><strong>Calcular los vectores.</strong> <code>embed_texts</code> envía los fragmentos al modelo y normaliza los vectores obtenidos. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/embeddings.py">src/embeddings.py</a>, líneas 39–49.</li>
+<li><strong>Guardar los datos.</strong> <code>add_chunks</code> asigna identificadores y almacena textos, vectores y datos de origen en Chroma. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/vector_store.py">src/vector_store.py</a>, líneas 36–55.</li>
+<li><strong>Recibir una pregunta.</strong> La terminal o la aplicación web obtiene el texto escrito por la persona. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/query.py">src/query.py</a>, líneas 29–34 y <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/app.py">app.py</a>, líneas 24–26.</li>
+<li><strong>Convertir la pregunta en un vector.</strong> <code>embed_query</code> aplica el mismo modelo utilizado para el manual. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/embeddings.py">src/embeddings.py</a>, líneas 51–60.</li>
+<li><strong>Buscar los resultados.</strong> Chroma compara el vector de la pregunta con los almacenados y devuelve la cantidad solicitada. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/vector_store.py">src/vector_store.py</a>, líneas 68–100.</li>
+<li><strong>Mostrar texto y fuente.</strong> La aplicación presenta los fragmentos completos, la fuente y su similitud. La terminal muestra una vista de los primeros 300 caracteres de cada fragmento. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/app.py">app.py</a>, líneas 30–35 y <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/query.py">src/query.py</a>, líneas 48–58.</li>
+</ol>
+<p>El código también contiene <code>semantic_split</code>, que compara oraciones para detectar cambios de tema, y <code>parent_child_split</code>, que conserva un texto mayor junto a fragmentos pequeños. Son opciones disponibles en la ingesta; no fueron las estrategias utilizadas en las capturas ni en la medición de este informe. Sus tamaños deben revisarse antes de usarlas con el modelo activo.</p>
+<h3>4.4. Ejecución en la terminal de Visual Studio Code</h3>
+<p>Con la terminal situada en la carpeta interna del proyecto, crear o reemplazar la colección del manual:</p>
+<pre><code class="language-powershell">&amp; '.venv/Scripts/python.exe' -m src.ingest --reset
+</code></pre>
+<p>El argumento <code>--reset</code> reemplaza el contenido de la colección seleccionada. Para documentar una ejecución sin cambiar la aplicación activa se puede usar una base separada:</p>
+<pre><code class="language-powershell">$env:PERSIST_DIR = Join-Path $PWD 'Docs/evidencias/base_validacion'
+&amp; '.venv/Scripts/python.exe' -m src.ingest --reset
+&amp; '.venv/Scripts/python.exe' -m src.query '¿Cuántos días duran las inspecciones A, B y C de las SGT-800?' --top-k 5
+Remove-Item Env:PERSIST_DIR
+</code></pre>
+<p>La última instrucción quita la variable de la terminal. La base de validación permanece guardada. La evidencia de ingesta está en <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/evidencias/ingesta.txt">ingesta.txt</a> y la consulta en <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/evidencias/consulta.txt">consulta.txt</a>.</p>
+<p>Para repetir las ocho preguntas, ejecutar:</p>
+<pre><code class="language-powershell">&amp; '.venv/Scripts/python.exe' consultas_manual.py
+</code></pre>
+<p>El archivo de preguntas común está en <a href="../preguntas_manual.json">preguntas_manual.json</a>. Los resultados se guardan en <a href="../resultados/proyecto_1_consultas.json">resultados/proyecto_1_consultas.json</a>, dentro del directorio general del trabajo. Referencia: <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/consultas_manual.py">consultas_manual.py</a>, líneas 1–20.</p>
+<h3>4.5. Ejecución y uso de la aplicación web</h3>
+<p>Desde la carpeta del proyecto:</p>
+<pre><code class="language-powershell">&amp; '.venv/Scripts/python.exe' -m streamlit run app.py --server.port 8501 --server.address 127.0.0.1 --browser.gatherUsageStats false
+</code></pre>
+<p>También existe el acceso <a href="../ejecutar-proyecto-1.ps1">ejecutar-proyecto-1.ps1</a> en la raíz del trabajo. Al iniciar el servidor se debe abrir <code>http://127.0.0.1:8501</code>. Si ya está ejecutándose en ese puerto, se utiliza la instancia abierta.</p>
+<p>La persona selecciona una pregunta sugerida o escribe otra, elige la cantidad de fragmentos y pulsa <strong>Buscar</strong>. La aplicación carga el modelo y la base una vez por proceso mediante <code>st.cache_resource</code>. Después reutiliza esos recursos en las consultas. Para cerrar una instancia iniciada en la terminal, pulsar Ctrl+C en esa terminal.</p>
+<h3>4.6. Consumo de los modelos de IA</h3>
+<p>Los modelos se ejecutan localmente. El modelo de vectores se descarga una vez desde Hugging Face y se reutiliza desde <code>.cache/huggingface</code>. La consulta y la ingesta consumen tiempo de CPU, memoria RAM y espacio en disco. En esta ejecución no se usó una API de pago ni se enviaron preguntas a un servicio externo de generación.</p>
+<p>La medición se realizó el <strong>10 de octubre de 2026</strong>, con horario de Bolivia. Se utilizó la pregunta «¿Qué significa HGP y en qué hitos EOH y EOC está previsto?». Los tiempos corresponden al estado del equipo en esa ejecución. La carga del modelo incluye la importación de sus bibliotecas. La memoria indicada corresponde al proceso Python completo, no solamente a los pesos del modelo.</p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Resultado registrado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modelo de vectores</td>
+<td>sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2</td>
+</tr>
+<tr>
+<td>Dimensión de cada vector</td>
+<td>384</td>
+</tr>
+<tr>
+<td>Carga del modelo y sus bibliotecas</td>
+<td>13,84 s</td>
+</tr>
+<tr>
+<td>Memoria de Python con el modelo cargado</td>
+<td>1.175,1 MiB</td>
+</tr>
+<tr>
+<td>Memoria máxima de Python durante la medición</td>
+<td>1.439,6 MiB</td>
+</tr>
+<tr>
+<td>Fragmentos de la base activa</td>
+<td>58</td>
+</tr>
+<tr>
+<td>Fragmentos de la consulta medida</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Consulta con el modelo ya cargado</td>
+<td>0,116 s</td>
+</tr>
+<tr>
+<td>Modelo generativo</td>
+<td>No se utiliza</td>
+</tr>
+</tbody>
+</table>
+<p>La suma del tamaño de los archivos de la caché de Hugging Face fue de <strong>457,5 MiB</strong>. Esta cifra corresponde a los archivos guardados en la caché, incluidos los archivos de configuración; no mide solamente los pesos ni todo el espacio ocupado por Python y sus dependencias. Las dimensiones y tiempos se registraron sin modificar el código de los modelos ni entrenarlos con el manual.</p>
+<p>El registro completo está en <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/evidencias/consumo_modelos.json">consumo_modelos.json</a> y su selección de campos en <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/evidencias/consumo_resumen.json">consumo_resumen.json</a>. La medición se puede repetir desde la carpeta del proyecto con:</p>
+<pre><code class="language-powershell">&amp; '.venv/Scripts/python.exe' -u '../../Docs/medir_ejecucion.py' 1
+</code></pre>
+<p>El archivo de medición se encuentra en <a href="medir_ejecucion.py">Docs/medir_ejecucion.py</a>, dentro del directorio general del trabajo. Usa una base de validación separada para registrar la ingesta.</p>
+<p>El modelo transforma el texto en números. No redacta respuestas de chat. Esta implementación no registra un contador de tokens de entrada ni produce tokens de salida de una respuesta de chat. Cambiar el tamaño de los fragmentos modifica la cantidad de vectores y el trabajo necesario para crearlos.</p>
+<h3>4.7. Resultados de la implementación</h3>
+<p>La ingesta de comprobación procesó un documento y almacenó 58 fragmentos con vectores reales. La consulta de terminal devolvió cinco resultados con el archivo de origen. La aplicación web permitió consultar inspecciones, contratos y confiabilidad. El registro de ocho preguntas realizado previamente se conserva en la carpeta general <code>resultados</code>.</p>
+<p>Se verificó el funcionamiento de la aplicación mediante una prueba de carga y búsqueda con Streamlit AppTest y mediante las capturas actuales del navegador. Este proyecto no tiene una suite propia de 26 pruebas; esa suite corresponde al segundo proyecto. La calidad de la recuperación debe evaluarse revisando el conjunto de resultados, no solamente el primer fragmento.</p>
+<p>Entre las respuestas documentales contrastadas se encuentran: inspecciones A, B y C con 3, 26 y 31 días de referencia; revisión parcial SST-400 a 25.000 EOH; revisión total a 50.000 EOH; y confiabilidad informada de 96,89 %, sin fórmula de cálculo visible.</p>
+<h3>4.8. Registro detallado de capturas</h3>
+<p>Se registran <strong>12 capturas</strong> de este proyecto. Cada imagen tiene su archivo PNG, su origen y una referencia verificable al código. Las vistas documentales se obtuvieron leyendo los archivos reales y abriendo una vista HTML local. Las capturas de aplicación proceden de Chromium en una sesión aislada de prueba. No se usaron imágenes generadas por IA.</p>
+<p>Para repetir una captura del código en Visual Studio Code, abrir el archivo indicado, ir a la línea con Ctrl+G y capturar el área del editor con Herramienta Recortes. Para repetir una captura de aplicación, realizar la acción descrita en el navegador y capturar la pantalla después de terminar la consulta. Las imágenes ya registradas están en <code>Docs/capturas</code> de este proyecto.</p>
+<h4>Captura 01. Documento utilizado como fuente</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir el manual en el Explorador de Visual Studio Code y comprobar su título y contenido.</p>
+<p><strong>Origen registrado:</strong> <code>data/documentos/MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/01_manual.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/utils.py">src/utils.py</a>, líneas 16–41.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/01_manual.html">capturas/01_manual.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 30.</p>
+<p><strong>Explicación de la evidencia:</strong> El documento reúne información de las turbinas SGT-800 y SST-400. La carpeta de ingesta contiene el manual; el ejemplo sobre RAG se conserva en <code>data/ejemplos</code>, fuera de esa carpeta.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/01_manual.png" alt="Documento utilizado como fuente" /></p>
+<h4>Captura 02. Dependencias instaladas y necesarias</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>requirements.txt</code> y revisar cada grupo de bibliotecas.</p>
+<p><strong>Origen registrado:</strong> <code>requirements.txt</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/02_dependencias.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/requirements.txt">requirements.txt</a>, líneas 1–22.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/02_dependencias.html">capturas/02_dependencias.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 22.</p>
+<p><strong>Explicación de la evidencia:</strong> Se observa la separación entre lectura de documentos, división del texto, creación de vectores, almacenamiento y aplicación web. Streamlit fue añadido para disponer de una interfaz de consulta.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/02_dependencias.png" alt="Dependencias instaladas y necesarias" /></p>
+<h4>Captura 03. Rutas, modelo y tamaño de fragmentos</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>config.py</code> y usar Ctrl+G para revisar las rutas y los valores de trabajo.</p>
+<p><strong>Origen registrado:</strong> <code>config.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/03_configuracion.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/config.py">config.py</a>, líneas 18–64.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/03_configuracion.html">capturas/03_configuracion.html</a>. El archivo de origen se muestra desde la línea 18 hasta la 64.</p>
+<p><strong>Explicación de la evidencia:</strong> La configuración selecciona el modelo multilingüe, la colección del manual y los tamaños de fragmentación. Los comentarios sobre BGE describen una alternativa del material original; el valor ejecutado está en la asignación <code>EMBEDDING_MODEL</code>.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/03_configuracion.png" alt="Rutas, modelo y tamaño de fragmentos" /></p>
+<h4>Captura 04. División del manual por separadores</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>src/chunking.py</code> en la función <code>recursive_character_split</code>.</p>
+<p><strong>Origen registrado:</strong> <code>src/chunking.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/04_fragmentacion.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/chunking.py">src/chunking.py</a>, líneas 32–63.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/04_fragmentacion.html">capturas/04_fragmentacion.html</a>. El archivo de origen se muestra desde la línea 32 hasta la 63.</p>
+<p><strong>Explicación de la evidencia:</strong> El código multiplica por cuatro el tamaño aproximado en tokens para trabajar con caracteres. Se prueban separadores de párrafo, línea, oración y palabra. Cada fragmento conserva su fuente, estrategia y posición.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/04_fragmentacion.png" alt="División del manual por separadores" /></p>
+<h4>Captura 05. Carga del modelo y creación de vectores</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>src/embeddings.py</code> y revisar la creación de <code>SentenceTransformer</code> y la llamada <code>encode</code>.</p>
+<p><strong>Origen registrado:</strong> <code>src/embeddings.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/05_embeddings.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/embeddings.py">src/embeddings.py</a>, líneas 21–60.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/05_embeddings.html">capturas/05_embeddings.html</a>. El archivo de origen se muestra desde la línea 21 hasta la 60.</p>
+<p><strong>Explicación de la evidencia:</strong> El modelo se carga en CPU y genera vectores normalizados. Los vectores del manual y de la pregunta usan el mismo modelo. La dimensión observada fue de 384 valores por vector.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/05_embeddings.png" alt="Carga del modelo y creación de vectores" /></p>
+<h4>Captura 06. Registro real de la ingesta del manual</h4>
+<p><strong>Acción para obtenerla:</strong> Ejecutar <code>.venv\Scripts\python.exe -m src.ingest --reset</code> en la terminal del proyecto.</p>
+<p><strong>Origen registrado:</strong> <code>Docs/evidencias/ingesta.txt</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/06_ingesta.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/ingest.py">src/ingest.py</a>, líneas 44–86.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/06_ingesta.html">capturas/06_ingesta.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 23.</p>
+<p><strong>Explicación de la evidencia:</strong> La evidencia muestra un documento leído, el modelo cargado y 58 fragmentos almacenados. Para esta comprobación se utilizó una base separada en <code>Docs/evidencias/base_validacion</code>, por lo que no se reemplazó la base de la aplicación abierta.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/06_ingesta.png" alt="Registro real de la ingesta del manual" /></p>
+<h4>Captura 07. Consulta real y fuentes recuperadas</h4>
+<p><strong>Acción para obtenerla:</strong> Ejecutar <code>.venv\Scripts\python.exe -m src.query &quot;¿Cuántos días duran las inspecciones A, B y C de las SGT-800?&quot; --top-k 5</code>.</p>
+<p><strong>Origen registrado:</strong> <code>Docs/evidencias/consulta.txt</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/07_consulta_terminal.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/query.py">src/query.py</a>, líneas 37–58.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/07_consulta_terminal.html">capturas/07_consulta_terminal.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 42.</p>
+<p><strong>Explicación de la evidencia:</strong> Se muestran cinco fragmentos, su similitud y el archivo de origen. La salida es texto recuperado del manual; el programa no crea una respuesta con un modelo generativo.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/07_consulta_terminal.png" alt="Consulta real y fuentes recuperadas" /></p>
+<h4>Captura 08. Inicio del buscador y base indexada</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>http://127.0.0.1:8501</code> con el servidor iniciado.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8501/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/08_aplicacion_inicio.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/app.py">app.py</a>, líneas 6–24.</p>
+<p><strong>Explicación de la evidencia:</strong> La pantalla contiene el número de fragmentos indexados, el control de cantidad, las preguntas sugeridas, el campo de pregunta y el botón Buscar. El número mostrado corresponde a la base activa.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/08_aplicacion_inicio.png" alt="Inicio del buscador y base indexada" /></p>
+<h4>Captura 09. Resultados reales sobre inspecciones A, B y C</h4>
+<p><strong>Acción para obtenerla:</strong> Seleccionar la pregunta sobre inspecciones A, B y C y pulsar Buscar.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8501/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/09_busqueda_inspecciones.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/app.py">app.py</a>, líneas 26–35.</p>
+<p><strong>Explicación de la evidencia:</strong> La aplicación presenta los fragmentos recuperados, el nombre del manual y los valores de similitud. Los tiempos de referencia que deben verificarse en el manual son 3, 26 y 31 días.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/09_busqueda_inspecciones.png" alt="Resultados reales sobre inspecciones A, B y C" /></p>
+<h4>Captura 10. Comparación documental de Offshore y Onshore</h4>
+<p><strong>Acción para obtenerla:</strong> Escribir la pregunta sobre Offshore y Onshore en el campo Pregunta y pulsar Buscar.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8501/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/10_busqueda_contratos.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/app.py">app.py</a>, líneas 26–35.</p>
+<p><strong>Explicación de la evidencia:</strong> Los resultados permiten revisar el suministro de partes y soporte del contrato Offshore, y la mano de obra calificada del contrato Onshore. La consulta cambia; los vectores de los documentos permanecen almacenados.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/10_busqueda_contratos.png" alt="Comparación documental de Offshore y Onshore" /></p>
+<h4>Captura 11. Recuperación del indicador y sus límites</h4>
+<p><strong>Acción para obtenerla:</strong> Escribir la pregunta sobre el 96,89 % y pulsar Buscar.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8501/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/11_busqueda_confiabilidad.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/app.py">app.py</a>, líneas 26–35.</p>
+<p><strong>Explicación de la evidencia:</strong> La aplicación recupera el indicador y las aclaraciones del manual. El documento no aporta período, población de equipos, fuente de datos ni fórmula de cálculo; esos datos no deben deducirse del porcentaje.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/11_busqueda_confiabilidad.png" alt="Recuperación del indicador y sus límites" /></p>
+<h4>Captura 12. Consumo medido del modelo de embeddings</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>Docs/evidencias/consumo_resumen.json</code> en Visual Studio Code.</p>
+<p><strong>Origen registrado:</strong> <code>Docs/evidencias/consumo_resumen.json</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/12_consumo_modelos.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/src/embeddings.py">src/embeddings.py</a>, líneas 22–49.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/12_consumo_modelos.html">capturas/12_consumo_modelos.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 14.</p>
+<p><strong>Explicación de la evidencia:</strong> La evidencia registra tiempos, memoria del proceso Python, tamaño de los vectores y cantidad de fragmentos. Los valores pertenecen a una ejecución concreta; no son límites garantizados para otros equipos.</p>
+<p><img src="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/12_consumo_modelos.png" alt="Consumo medido del modelo de embeddings" /></p>
+<p>El archivo <a href="../rag-chunking-embeddings-vectordb/rag-chunking-embeddings-vectordb/Docs/capturas/manifest.json">manifest.json</a> registra el origen, el tipo de imagen y las líneas de cada captura.</p>
+<h2>5. Conclusiones</h2>
+<p>El proyecto cumple la función de leer el manual, dividirlo, crear vectores y recuperar partes relacionadas con una pregunta. La configuración aplicada conserva la fuente de cada resultado y permite ejecutar las consultas de manera local.</p>
+<p>La ingesta comprobada generó 58 fragmentos y la búsqueda devolvió texto del manual con sus datos de origen. El modelo multilingüe permitió comparar preguntas en español con el contenido del documento. La memoria medida corresponde al proceso completo y confirma que la ejecución local requiere recursos del equipo.</p>
+<p>La aplicación facilita la revisión documental, pero no redacta respuestas nuevas ni valida por sí sola una decisión de mantenimiento. La similitud organiza la búsqueda y debe acompañarse de la lectura de los fragmentos y del manual vigente.</p>
+<h2>6. Recomendaciones</h2>
+<ol>
+<li>Mantener una versión identificada del manual y reconstruir la colección cuando cambie su contenido.</li>
+<li>Revisar las rutas y seleccionar el entorno <code>.venv</code> de este proyecto en Visual Studio Code.</li>
+<li>Medir tokens con el método del modelo antes de cambiar los tamaños de fragmentación; la relación de cuatro caracteres por token es aproximada.</li>
+<li>Usar una colección separada para comparar estrategias y evitar mezclar vectores de modelos distintos.</li>
+<li>Revisar varios resultados y confirmar cifras, unidades, fechas y alcances contra el manual.</li>
+<li>Conservar la caché del modelo, los archivos de versiones y las evidencias para repetir la ejecución.</li>
+<li>Si se requiere una respuesta redactada, utilizar el sistema RAG del segundo proyecto y revisar sus fuentes.</li>
+<li>Verificar tiempos y memoria en el equipo de destino; los valores registrados describen una sola ejecución.</li>
+</ol>
+</main></html>

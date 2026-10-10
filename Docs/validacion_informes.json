@@ -1,0 +1,26 @@
+[
+  {
+    "informe": "Docs\\Informe_chucking_embeddings.md",
+    "capturas": 12,
+    "palabras": 3872,
+    "bytes": 33705
+  },
+  {
+    "informe": "Docs\\Informe_rag_pipeline.md",
+    "capturas": 14,
+    "palabras": 4704,
+    "bytes": 40107
+  },
+  {
+    "informe": "rag-chunking-embeddings-vectordb\\rag-chunking-embeddings-vectordb\\Docs\\Informe.md",
+    "capturas": 12,
+    "palabras": 3872,
+    "bytes": 30039
+  },
+  {
+    "informe": "rag-knowledge-pipeline (1)\\rag-knowledge-pipeline\\Docs\\Informe.md",
+    "capturas": 14,
+    "palabras": 4704,
+    "bytes": 36321
+  }
+]

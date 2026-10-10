@@ -1,0 +1,22 @@
+# -----------------------------------------------------------------------
+# Dependencias 100% open source. No se requiere ninguna API key ni
+# servicio de pago: todo corre en local.
+# -----------------------------------------------------------------------
+
+# Chunking (U4) - RecursiveCharacterTextSplitter
+langchain-text-splitters>=0.3.0
+
+# Embeddings (U5) - carga modelos open source desde Hugging Face
+sentence-transformers>=3.0.0
+torch>=2.2.0
+
+# Base de datos vectorial (U6) - embebida, persistencia local
+chromadb>=0.5.0
+
+# Lectura de documentos PDF
+pypdf>=4.2.0
+
+# Utilidades
+numpy>=1.26.0
+tqdm>=4.66.0
+streamlit>=1.40.0

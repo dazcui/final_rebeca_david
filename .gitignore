@@ -1,0 +1,59 @@
+# Instalaciones locales y descargas (se vuelven a instalar)
+.runtime/
+.tools/
+.downloads/
+.cache/
+.venv/
+venv/
+env/
+
+# Python: archivos compilados, pruebas y paquetes generados
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Modelos descargados y pesos: no forman parte del codigo fuente
+*.safetensors
+*.gguf
+*.onnx
+*.pt
+*.pth
+*.ckpt
+
+# Bases vectoriales que se regeneran con la ingesta
+vectorstore/
+chroma_db/
+base_validacion/
+**/data/processed/*
+!**/data/processed/.gitkeep
+
+# Credenciales locales; conservar las plantillas de configuracion
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Registros y estado temporal de los servidores
+*.log
+*.log.*
+/resultados/servidores.json
+
+# Vistas de revision generadas; conservar las capturas de los informes
+/Docs/*_vista.png
+
+# Archivos temporales del sistema y editores
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.tmp
+*.temp
+*~

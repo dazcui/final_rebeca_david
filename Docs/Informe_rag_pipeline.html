@@ -1,0 +1,391 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>Informe_rag_pipeline</title><style>body{margin:0;background:#eef2f6;color:#17253a;font:17px/1.6 Arial,sans-serif}
+    main{max-width:1080px;margin:30px auto;padding:36px 48px;background:white}
+    h1,h2,h3,h4{line-height:1.25;color:#12304f}h2{margin-top:44px;border-bottom:2px solid #ccd8e3;padding-bottom:10px}
+    img{display:block;max-width:100%;height:auto;border:1px solid #d5dce5;margin:22px 0}
+    pre{background:#f2f5f8;padding:18px;overflow:auto;line-height:1.5}code{font-family:Consolas,monospace}
+    table{border-collapse:collapse;width:100%;font-size:15px}td,th{border:1px solid #ccd5df;padding:10px;text-align:left}
+    a{color:#125993} @media print{main{margin:0;padding:0}h2,h3,h4{break-after:avoid}img{break-inside:avoid}}</style><main><h1>Informe del sistema RAG aplicado al mantenimiento preventivo</h1>
+<p><strong>Proyecto:</strong> <code>rag-knowledge-pipeline</code><br />
+<strong>Fuente aplicada:</strong> Manual del Programa de Mantenimiento Preventivo de turbinas SGT-800 y SST-400<br />
+<strong>Fecha de documentación:</strong> 10 de octubre de 2026<br />
+<strong>Entorno:</strong> Windows, Python 3.12.15, Chroma y Ollama local</p>
+<h2>1. Introducción</h2>
+<p>Este proyecto permite formular preguntas sobre el Manual del Programa de Mantenimiento Preventivo y recibir respuestas preparadas con información recuperada de ese documento. Primero lee y limpia el texto, después lo divide y guarda sus vectores. Para cada pregunta, busca fragmentos relacionados, construye un contexto y lo envía a un modelo de lenguaje ejecutado con Ollama.</p>
+<p>La aplicación incluye un chat y un panel de fuentes para revisar el contenido utilizado en la respuesta. Su objetivo es apoyar la consulta documental de inspecciones, contratos, cronogramas y datos de confiabilidad. El manual utilizado no se convierte en un procedimiento operativo nuevo mediante este sistema.</p>
+<p>La adaptación realizada reemplaza los ejemplos generales por el manual, ajusta la fragmentación, añade preguntas del mantenimiento y refuerza el tratamiento de siglas y unidades. Este informe documenta los archivos, los pasos de ejecución y el consumo real de los modelos.</p>
+<h2>2. Objetivos</h2>
+<h3>2.1. Objetivo general</h3>
+<p>Implementar y documentar un sistema RAG local que responda preguntas sobre mantenimiento preventivo utilizando información recuperada del manual y fuentes que puedan revisarse.</p>
+<h3>2.2. Objetivos específicos</h3>
+<ol>
+<li>Preparar un entorno de Python propio para el proyecto.</li>
+<li>Extraer, limpiar y dividir el manual con datos de origen.</li>
+<li>Generar vectores y guardarlos en una base local.</li>
+<li>Combinar la búsqueda por significado con la búsqueda por palabras.</li>
+<li>Construir el contexto e instrucciones para el modelo generativo.</li>
+<li>Ejecutar la generación mediante Ollama sin una API de pago.</li>
+<li>Mostrar las respuestas y sus fragmentos de apoyo en un chat.</li>
+<li>Comprobar las pruebas, los resultados y el consumo de recursos.</li>
+</ol>
+<h2>3. Marco Teórico</h2>
+<h3>3.1. Sistema RAG</h3>
+<p>RAG utiliza información recuperada para preparar una respuesta. En esta implementación, la recuperación selecciona fragmentos; la preparación del contexto añade instrucciones y la pregunta; y la generación produce texto a partir de esos datos. El modelo generativo recibe los fragmentos seleccionados, no consulta directamente la base Chroma.</p>
+<h3>3.2. Extracción, limpieza y fragmentación</h3>
+<p>La extracción obtiene texto de archivos PDF, HTML o Markdown. La limpieza corrige caracteres, quita marcas de formato, organiza espacios y elimina repeticiones exactas. La fragmentación divide el texto para procesarlo y recuperarlo en partes. Cada fragmento conserva el nombre del archivo, su tipo y la página cuando la fuente es un PDF.</p>
+<p>El manual aplicado está en Markdown. Por ello, sus fragmentos no tienen números de página de PDF. Los números de fragmento que aparecen en el contexto son identificadores de la consulta, no números de sección del manual.</p>
+<h3>3.3. Vectores y búsqueda híbrida</h3>
+<p>El modelo de embeddings convierte texto en listas de 384 números. La comparación por vectores permite encontrar textos relacionados aunque la pregunta no repita todas las palabras del manual. La normalización ajusta la longitud numérica del vector para facilitar esa comparación. La búsqueda por palabras utiliza BM25, un método que da prioridad a términos presentes en los documentos.</p>
+<p>La búsqueda híbrida combina ambos puntajes. En este proyecto el peso de la búsqueda por vectores es 0,6 y el de la búsqueda por palabras es 0,4. Los resultados se ordenan por el puntaje combinado. Ese puntaje no equivale a una probabilidad de respuesta correcta.</p>
+<h3>3.4. Recuperación iterativa</h3>
+<p>El modo llamado Agentic RAG en el código revisa el puntaje promedio de los resultados. Si es menor que el umbral, aumenta la cantidad de fragmentos y repite la búsqueda. Esta implementación permite hasta dos rondas y aumenta <code>top_k</code> en dos. No ejecuta órdenes de mantenimiento ni transforma la pregunta mediante otro modelo.</p>
+<h3>3.5. Contexto, tokens y generación local</h3>
+<p>El contexto es el texto seleccionado para que el modelo pueda responder. Un token es una unidad de texto que el modelo procesa; no siempre corresponde a una palabra completa. Un contexto más largo requiere más trabajo de procesamiento.</p>
+<p>Ollama ejecuta el modelo generativo en el equipo. La aplicación utiliza <code>llama3.2:3b</code>. La temperatura configurada en cero reduce la variación entre respuestas, pero no garantiza exactitud. El límite de salida es de 300 tokens. Los modelos no se entrenaron ni se ajustaron con el manual.</p>
+<h2>4. Implementación Aplicada</h2>
+<h3>4.1. Entorno de trabajo en Visual Studio Code</h3>
+<p>El directorio de trabajo es <code>C:\Users\Usuario\Desktop\TrabFin ModII</code>. En Visual Studio Code se debe seleccionar <strong>Archivo &gt; Abrir carpeta</strong> y abrir este directorio. El proyecto de este informe se encuentra en <code>rag-knowledge-pipeline (1)\rag-knowledge-pipeline</code>. La carpeta exterior contiene la carpeta interna del proyecto; los comandos deben ejecutarse en la carpeta interna, donde está el archivo de configuración.</p>
+<p>Los archivos se modificaron y las aplicaciones se ejecutaron mediante herramientas de archivos y PowerShell. Esta sección documenta cómo revisar y reproducir ese trabajo en Visual Studio Code. Las imágenes del código son vistas documentales de archivos reales; no se presentan como capturas nativas del editor. Las imágenes de la aplicación sí corresponden a su ejecución real en un navegador de prueba.</p>
+<p>Para revisar el código, abrir el archivo desde el panel <strong>Explorador</strong>. Usar <strong>Ctrl+G</strong> para ir a la línea indicada en cada evidencia. Para ejecutar los comandos, abrir <strong>Terminal &gt; Nueva terminal</strong>. Para revisar este informe con sus imágenes, abrir <code>Docs/Informe.md</code> y usar <strong>Ctrl+Shift+V</strong>.</p>
+<p>El equipo tenía Python 3.14. Se instaló Python 3.12.15 en <code>.runtime</code>, dentro del directorio de trabajo, para usar una versión compatible con las dependencias. Cada proyecto tiene su propio entorno <code>.venv</code>. Desde la raíz del trabajo, la instalación realizada se puede reproducir con:</p>
+<pre><code class="language-powershell">python -m pip install --target .tools uv
+$env:UV_PYTHON_INSTALL_DIR = Join-Path $PWD '.runtime'
+$env:UV_CACHE_DIR = Join-Path $PWD '.cache/uv'
+&amp; '.tools/bin/uv.exe' python install 3.12
+&amp; '.tools/bin/uv.exe' venv --python '.runtime/cpython-3.12.15-windows-x86_64-none/python.exe' 'rag-knowledge-pipeline (1)\rag-knowledge-pipeline/.venv'
+&amp; '.tools/bin/uv.exe' pip install --python 'rag-knowledge-pipeline (1)\rag-knowledge-pipeline/.venv/Scripts/python.exe' -r 'rag-knowledge-pipeline (1)\rag-knowledge-pipeline/requirements-lock.txt'
+</code></pre>
+<p><code>uv</code> es la herramienta utilizada para instalar Python y las bibliotecas. <code>requirements.txt</code> establece las dependencias admitidas. <code>requirements-lock.txt</code> registra las versiones instaladas. La primera instalación necesita conexión a Internet.</p>
+<p>En Visual Studio Code, abrir <strong>Ctrl+Shift+P &gt; Python: Select Interpreter</strong> y seleccionar el archivo <code>.venv\Scripts\python.exe</code> de este proyecto. Esta opción requiere la extensión Python del editor. Si la extensión no está disponible, los comandos siguientes siguen indicando de forma expresa el archivo de Python que deben utilizar.</p>
+<p>Antes de ejecutar las consultas, ubicar la terminal en la carpeta del proyecto y definir la ubicación del modelo descargado:</p>
+<pre><code class="language-powershell">Set-Location 'C:\Users\Usuario\Desktop\TrabFin ModII\rag-knowledge-pipeline (1)\rag-knowledge-pipeline'
+$env:HF_HOME = 'C:\Users\Usuario\Desktop\TrabFin ModII\.cache\huggingface'
+$env:HF_HUB_OFFLINE = '1'
+$env:PYTHONUTF8 = '1'
+</code></pre>
+<p>El modo sin conexión indicado funciona porque el modelo ya fue descargado. Para una primera descarga se debe quitar esa variable con <code>Remove-Item Env:HF_HUB_OFFLINE -ErrorAction SilentlyContinue</code>. Esta instrucción elimina la variable de la terminal, no archivos del proyecto.</p>
+<p>Las bibliotecas principales instaladas fueron Sentence Transformers 6.1.0, PyTorch 2.14.1, Chroma 1.5.9 y Streamlit 1.65.0. Las versiones exactas y las demás dependencias están en <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/requirements-lock.txt">requirements-lock.txt</a>.</p>
+<h3>4.2. Organización y cambios realizados</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo o carpeta</th>
+<th>Función aplicada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data/raw/</code></td>
+<td>Contiene el manual utilizado como fuente.</td>
+</tr>
+<tr>
+<td><code>config/settings.py</code></td>
+<td>Define rutas, fragmentación, búsqueda y modelos.</td>
+</tr>
+<tr>
+<td><code>ingestion/extractors.py</code></td>
+<td>Extrae texto y datos de origen.</td>
+</tr>
+<tr>
+<td><code>ingestion/cleaners.py</code></td>
+<td>Corrige y limpia el contenido.</td>
+</tr>
+<tr>
+<td><code>ingestion/pipeline.py</code></td>
+<td>Ejecuta las cuatro etapas de ingesta.</td>
+</tr>
+<tr>
+<td><code>rag/chunking.py</code></td>
+<td>Divide el texto limpio y agrega solapamiento.</td>
+</tr>
+<tr>
+<td><code>rag/embeddings.py</code></td>
+<td>Carga el modelo multilingüe y calcula vectores.</td>
+</tr>
+<tr>
+<td><code>rag/vector_store.py</code></td>
+<td>Guarda, consulta y enumera fragmentos en Chroma.</td>
+</tr>
+<tr>
+<td><code>rag/retriever.py</code></td>
+<td>Implementa búsqueda semántica, por palabras, híbrida e iterativa.</td>
+</tr>
+<tr>
+<td><code>rag/augmentation.py</code></td>
+<td>Construye instrucciones, contexto y pregunta.</td>
+</tr>
+<tr>
+<td><code>rag/generator.py</code></td>
+<td>Llama al modelo mediante el cliente Ollama.</td>
+</tr>
+<tr>
+<td><code>cli.py</code></td>
+<td>Proporciona los comandos ingest, ask y compare.</td>
+</tr>
+<tr>
+<td><code>app/streamlit_app.py</code></td>
+<td>Presenta el chat, configuración y fuentes.</td>
+</tr>
+<tr>
+<td><code>consultas_manual.py</code></td>
+<td>Ejecuta las ocho preguntas y guarda respuestas y fragmentos.</td>
+</tr>
+<tr>
+<td><code>tests/</code></td>
+<td>Comprueba limpieza, fragmentación, contexto, base y búsqueda.</td>
+</tr>
+</tbody>
+</table>
+<p>La colección se cambió a <code>manual_mantenimiento_preventivo</code>. Las rutas se resolvieron desde el archivo de configuración para no depender del lugar desde el que se abre el editor. Se usa un tamaño de 500 caracteres con 80 de solapamiento. El modelo de generación se fijó en <code>llama3.2:3b</code>, con temperatura cero. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/config/settings.py">config/settings.py</a>, líneas 16–55.</p>
+<p>Se añadieron las preguntas sugeridas del manual, el registro de consultas, el acceso de ejecución y las instrucciones para responder sobre SGT-800 y SST-400. Se corrigió el uso de <code>OLLAMA_HOST</code> creando un cliente explícito con ese valor y un tiempo máximo de espera de 180 segundos. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/generator.py">rag/generator.py</a>, líneas 21–44.</p>
+<p>En las pruebas se detectó un bloqueo de archivos temporales de la base Chroma en Windows. Se corrigió el cierre del cliente Chroma en la preparación de pruebas. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/tests/conftest.py">tests/conftest.py</a>, líneas 40–49.</p>
+<p>Durante la comprobación se observaron respuestas incorrectas o incompletas al desarrollar HGP. Se añadió un conjunto de definiciones del manual y una búsqueda adicional para incluir la definición junto con los principales datos recuperados por la pregunta original. Las instrucciones del generador también separan EOH de EOC. Estas medidas mejoran el contexto y las reglas, pero la respuesta debe seguir revisándose. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/retriever.py">rag/retriever.py</a>, líneas 25–36, <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/retriever.py">rag/retriever.py</a>, líneas 104–116 y <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/generator.py">rag/generator.py</a>, líneas 28–42.</p>
+<h3>4.3. Funcionamiento paso a paso</h3>
+<ol>
+<li><strong>Extraer el documento.</strong> <code>extract_directory</code> revisa archivos admitidos y aplica el lector correspondiente. Para Markdown se conserva el texto y se simplifican enlaces. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/ingestion/extractors.py">ingestion/extractors.py</a>, líneas 70–108.</li>
+<li><strong>Limpiar el texto.</strong> <code>clean_corpus</code> aplica corrección de caracteres, eliminación de marcas, orden de espacios y eliminación de párrafos repetidos. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/ingestion/cleaners.py">ingestion/cleaners.py</a>, líneas 124–142.</li>
+<li><strong>Dividir el contenido.</strong> <code>chunk_documents</code> crea fragmentos con identificadores y datos de origen. La función agrega al siguiente fragmento hasta 80 caracteres del anterior. El tamaño final puede superar los 500 caracteres nominales por ese agregado. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/chunking.py">rag/chunking.py</a>, líneas 66–104.</li>
+<li><strong>Crear los vectores.</strong> <code>get_embedding_model</code> carga el modelo una vez y <code>embed_texts</code> obtiene vectores normalizados. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/embeddings.py">rag/embeddings.py</a>, líneas 15–36.</li>
+<li><strong>Guardar los fragmentos.</strong> Chroma conserva identificador, vector, texto, fuente, página y tipo de documento. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/vector_store.py">rag/vector_store.py</a>, líneas 23–42.</li>
+<li><strong>Recibir la pregunta.</strong> La terminal o el chat obtiene la pregunta y la cantidad de resultados. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/cli.py">cli.py</a>, líneas 25–43 y <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/app/streamlit_app.py">app/streamlit_app.py</a>, líneas 57–73.</li>
+<li><strong>Recuperar información.</strong> El buscador combina vectores y BM25. Si hay una sigla conocida, recupera también su definición. Si está activo el modo iterativo, revisa la evidencia y puede repetir con más resultados. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/retriever.py">rag/retriever.py</a>, líneas 84–156.</li>
+<li><strong>Preparar el contexto.</strong> Se escriben instrucciones, fragmentos con fuentes y la pregunta. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/augmentation.py">rag/augmentation.py</a>, líneas 25–46.</li>
+<li><strong>Generar la respuesta.</strong> El cliente Ollama recibe un mensaje de sistema y el contexto como mensaje de usuario. El modelo devuelve texto, que la aplicación presenta en pantalla. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/generator.py">rag/generator.py</a>, líneas 21–44.</li>
+<li><strong>Conservar el historial.</strong> El chat guarda las preguntas y respuestas en la sesión del navegador. Los fragmentos aparecen en un panel separado. El historial de la interfaz no sustituye el archivo JSON de las consultas de prueba. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/app/streamlit_app.py">app/streamlit_app.py</a>, líneas 50–55 y <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/app/streamlit_app.py">app/streamlit_app.py</a>, líneas 87–107.</li>
+</ol>
+<p>Si Ollama no puede responder, la interfaz muestra un mensaje y fragmentos recuperados. La terminal también dispone del argumento <code>--no-generate</code>, que permite consultar y revisar el contexto sin llamar al modelo generativo. Referencia: <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/cli.py">cli.py</a>, líneas 50–64.</p>
+<h3>4.4. Ejecución en la terminal de Visual Studio Code</h3>
+<p>Ollama ya estaba instalado en el equipo. Se descargó el modelo con:</p>
+<pre><code class="language-powershell">ollama pull llama3.2:3b
+ollama list
+</code></pre>
+<p>Ollama debe estar en ejecución en <code>http://localhost:11434</code>. Si no se encuentra activo, se puede iniciar con <code>ollama serve</code> en otra terminal. Desde la carpeta interna del proyecto, los comandos principales son:</p>
+<pre><code class="language-powershell">&amp; '.venv/Scripts/python.exe' cli.py ingest --reset
+&amp; '.venv/Scripts/python.exe' cli.py ask '¿Qué significa HGP y en qué hitos EOH y EOC está previsto?' --top-k 5
+&amp; '.venv/Scripts/python.exe' cli.py ask '¿Qué intervención está prevista para WAR42 en 2027?' --agentic
+&amp; '.venv/Scripts/python.exe' cli.py ask '¿Qué incluye el contrato Onshore?' --no-generate
+&amp; '.venv/Scripts/python.exe' cli.py compare '¿Qué intervención está prevista para WAR42 en 2027?'
+&amp; '.venv/Scripts/python.exe' -m pytest -q
+</code></pre>
+<p>El argumento <code>--reset</code> reemplaza la colección seleccionada. En la comprobación de este informe se estableció <code>VECTOR_DB_DIR</code> en <code>Docs/evidencias/base_validacion</code> antes de ejecutar la ingesta. Así se registró una base separada sin reemplazar la de la aplicación abierta. Al quitar esa variable, el programa vuelve a la ruta configurada para la base activa.</p>
+<p>Los registros reales están en <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/evidencias/ingesta.txt">ingesta.txt</a>, <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/evidencias/consulta_sin_generacion.txt">consulta_sin_generacion.txt</a> y <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/evidencias/pruebas.txt">pruebas.txt</a>. Para repetir las ocho preguntas, ejecutar <code>.venv\Scripts\python.exe consultas_manual.py</code>. La lista está en <a href="../preguntas_manual.json">preguntas_manual.json</a> y los resultados generales en <a href="../resultados/proyecto_2_respuestas.json">proyecto_2_respuestas.json</a>.</p>
+<h3>4.5. Ejecución y uso de la aplicación web</h3>
+<p>Desde la carpeta del proyecto:</p>
+<pre><code class="language-powershell">&amp; '.venv/Scripts/python.exe' -m streamlit run app/streamlit_app.py --server.port 8502 --server.address 127.0.0.1 --browser.gatherUsageStats false
+</code></pre>
+<p>El acceso <a href="../ejecutar-proyecto-2.ps1">ejecutar-proyecto-2.ps1</a> de la raíz del trabajo prepara la carpeta y la caché antes de iniciar Streamlit. La aplicación se abre en <code>http://127.0.0.1:8502</code>. Si ya hay una instancia abierta en ese puerto, se usa esa instancia.</p>
+<p>El panel lateral permite activar o desactivar el modo iterativo y cambiar la cantidad de fragmentos. La persona elige una pregunta sugerida y pulsa <strong>Consultar pregunta sugerida</strong>, o escribe una pregunta en el campo de chat y la envía con Enter. El programa recupera el contexto, genera la respuesta y muestra el texto final. El panel de fuentes permite revisar fragmentos y puntajes.</p>
+<p>La base y el buscador se conservan mediante <code>st.cache_resource</code>. El modelo de vectores también se guarda en memoria con <code>lru_cache</code>. Si se reconstruye la colección mientras la aplicación está abierta, se debe reiniciar la aplicación para actualizar el índice de palabras que el buscador mantiene en memoria.</p>
+<h3>4.6. Consumo de los modelos de IA</h3>
+<p>Los modelos se ejecutan localmente. El modelo de vectores se descarga una vez desde Hugging Face y se reutiliza desde <code>.cache/huggingface</code>. La consulta y la ingesta consumen tiempo de CPU, memoria RAM y espacio en disco. En esta ejecución no se usó una API de pago ni se enviaron preguntas a un servicio externo de generación.</p>
+<p>La medición se realizó el <strong>10 de octubre de 2026</strong>, con horario de Bolivia. Se utilizó la pregunta «¿Qué significa HGP y en qué hitos EOH y EOC está previsto?». Los tiempos corresponden al estado del equipo en esa ejecución. La carga del modelo incluye la importación de sus bibliotecas. La memoria indicada corresponde al proceso Python completo, no solamente a los pesos del modelo.</p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Resultado registrado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Modelo de vectores</td>
+<td>paraphrase-multilingual-MiniLM-L12-v2</td>
+</tr>
+<tr>
+<td>Dimensión de cada vector</td>
+<td>384</td>
+</tr>
+<tr>
+<td>Carga del modelo y sus bibliotecas</td>
+<td>11,49 s</td>
+</tr>
+<tr>
+<td>Memoria de Python con el modelo cargado</td>
+<td>1.205,7 MiB</td>
+</tr>
+<tr>
+<td>Memoria máxima de Python durante la medición</td>
+<td>1.471,3 MiB</td>
+</tr>
+<tr>
+<td>Fragmentos de la base activa</td>
+<td>57</td>
+</tr>
+<tr>
+<td>Fragmentos de la consulta medida</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Recuperación con el modelo ya cargado</td>
+<td>0,108 s</td>
+</tr>
+<tr>
+<td>Modelo generativo</td>
+<td>llama3.2:3b</td>
+</tr>
+<tr>
+<td>Tiempo de la llamada de generación</td>
+<td>41,15 s</td>
+</tr>
+<tr>
+<td>Tokens de entrada informados por Ollama</td>
+<td>1286</td>
+</tr>
+<tr>
+<td>Tokens generados informados por Ollama</td>
+<td>52</td>
+</tr>
+<tr>
+<td>Velocidad durante la generación de tokens</td>
+<td>8,90 tokens/s</td>
+</tr>
+<tr>
+<td>Límite configurado de salida</td>
+<td>300 tokens</td>
+</tr>
+<tr>
+<td>Temperatura</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>Tamaño del modelo cargado informado por Ollama</td>
+<td>2,39 GiB</td>
+</tr>
+<tr>
+<td>Memoria GPU informada por Ollama</td>
+<td>0 bytes</td>
+</tr>
+<tr>
+<td>Ventana de contexto informada por Ollama</td>
+<td>4096 tokens</td>
+</tr>
+</tbody>
+</table>
+<p>La suma del tamaño de los archivos de la caché de Hugging Face fue de <strong>457,5 MiB</strong>. Esta cifra corresponde a los archivos guardados en la caché, incluidos los archivos de configuración; no mide solamente los pesos ni todo el espacio ocupado por Python y sus dependencias. Las dimensiones y tiempos se registraron sin modificar el código de los modelos ni entrenarlos con el manual.</p>
+<p>El registro completo está en <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/evidencias/consumo_modelos.json">consumo_modelos.json</a> y su selección de campos en <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/evidencias/consumo_resumen.json">consumo_resumen.json</a>. La medición se puede repetir desde la carpeta del proyecto con:</p>
+<pre><code class="language-powershell">&amp; '.venv/Scripts/python.exe' -u '../../Docs/medir_ejecucion.py' 2
+</code></pre>
+<p>El archivo de medición se encuentra en <a href="medir_ejecucion.py">Docs/medir_ejecucion.py</a>, dentro del directorio general del trabajo. Usa una base de validación separada para registrar la ingesta.</p>
+<p>Ollama entrega el número real de tokens procesados y generados por su modelo. El límite de 300 tokens es un máximo configurado, no una cantidad consumida en todas las respuestas. En la consulta medida se generaron 52 tokens. Las duraciones originales se expresan en nanosegundos; para obtener segundos se dividen entre 1.000.000.000.</p>
+<p>La velocidad de 8,90 tokens por segundo se calcula solamente durante la producción de tokens. No incluye todo el tiempo de carga ni de lectura del contexto. La memoria del proceso Python no incluye la memoria del proceso que ejecuta el modelo dentro de Ollama. La API de Ollama informó un modelo cargado de 2,39 GiB y cero bytes de memoria GPU.</p>
+<p>Para la pregunta sobre WAR42 en 2027, el comando <code>compare</code> registró 860 tokens en el contexto RAG frente a 6903 al reunir todos los fragmentos almacenados. El ahorro calculado fue de 87,5 %. Este conteo usa <code>tiktoken</code> con <code>cl100k_base</code> como referencia; no es el contador de Llama. El contexto largo se construye con todos los fragmentos, incluidos sus solapamientos, y no con una copia única del documento original. Por ello, la comparación describe esta implementación y no una reducción garantizada del tiempo de respuesta.</p>
+<h3>4.7. Resultados y revisión de respuestas</h3>
+<p>La ingesta actual de comprobación procesó un archivo, obtuvo un documento limpio y almacenó 57 fragmentos. Las 26 pruebas del proyecto finalizaron correctamente. Las pruebas utilizan un generador de vectores de prueba, mientras que la ingesta y las consultas de este informe utilizaron el modelo real descargado.</p>
+<p>Las preguntas cubren duraciones A/B/C, alcances Offshore/Onshore, hitos SST-400, HGP, WAR42, colores de cronograma, ensayos NDT y confiabilidad. Las respuestas verificadas directamente con el manual están en <a href="../resultados/PREGUNTAS_Y_RESPUESTAS_VERIFICADAS.md">PREGUNTAS_Y_RESPUESTAS_VERIFICADAS.md</a>.</p>
+<p>Se comprobó que el modelo puede omitir parte de una pregunta, incluso con contexto disponible. Por ejemplo, una respuesta breve sobre HGP puede incluir su definición y horas, pero no todos los ciclos equivalentes. Los resultados del modelo se conservan como evidencia; las respuestas contrastadas con el manual se presentan por separado. Tener temperatura cero y fuentes recuperadas no elimina la necesidad de revisar el contenido.</p>
+<p>La comparación de tokens mostró una reducción del contexto enviado en la consulta de WAR42. Ese resultado se limita al método de conteo y al conjunto de fragmentos de esta implementación; no se realizaron mediciones para afirmar una mejora general del tiempo de generación.</p>
+<h3>4.8. Registro detallado de capturas</h3>
+<p>Se registran <strong>14 capturas</strong> de este proyecto. Cada imagen tiene su archivo PNG, su origen y una referencia verificable al código. Las vistas documentales se obtuvieron leyendo los archivos reales y abriendo una vista HTML local. Las capturas de aplicación proceden de Chromium en una sesión aislada de prueba. No se usaron imágenes generadas por IA.</p>
+<p>Para repetir una captura del código en Visual Studio Code, abrir el archivo indicado, ir a la línea con Ctrl+G y capturar el área del editor con Herramienta Recortes. Para repetir una captura de aplicación, realizar la acción descrita en el navegador y capturar la pantalla después de terminar la consulta. Las imágenes ya registradas están en <code>Docs/capturas</code> de este proyecto.</p>
+<h4>Captura 01. Manual utilizado por el sistema RAG</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir el manual de <code>data/raw</code> en Visual Studio Code.</p>
+<p><strong>Origen registrado:</strong> <code>data/raw/MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/01_manual.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/ingestion/extractors.py">ingestion/extractors.py</a>, líneas 70–81.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/01_manual.html">capturas/01_manual.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 30.</p>
+<p><strong>Explicación de la evidencia:</strong> El documento es la fuente aplicada de conocimiento. La consulta utiliza fragmentos de este archivo y no una base de ejemplos de reembolsos o soporte técnico.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/01_manual.png" alt="Manual utilizado por el sistema RAG" /></p>
+<h4>Captura 02. Configuración de recuperación y modelos</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>config/settings.py</code> y revisar las rutas, los pesos de búsqueda y los modelos.</p>
+<p><strong>Origen registrado:</strong> <code>config/settings.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/02_configuracion.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/config/settings.py">config/settings.py</a>, líneas 16–55.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/02_configuracion.html">capturas/02_configuracion.html</a>. El archivo de origen se muestra desde la línea 16 hasta la 55.</p>
+<p><strong>Explicación de la evidencia:</strong> Se observan 500 caracteres por fragmento, 80 de solapamiento, cuatro resultados por defecto, pesos de 0,6 y 0,4, y el modelo <code>llama3.2:3b</code>. La configuración permite cambiar estos valores mediante variables del entorno.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/02_configuracion.png" alt="Configuración de recuperación y modelos" /></p>
+<h4>Captura 03. Etapas de extracción, limpieza e ingesta</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>ingestion/pipeline.py</code> en <code>run_pipeline</code>.</p>
+<p><strong>Origen registrado:</strong> <code>ingestion/pipeline.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/03_ingestion_codigo.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/ingestion/pipeline.py">ingestion/pipeline.py</a>, líneas 26–63.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/03_ingestion_codigo.html">capturas/03_ingestion_codigo.html</a>. El archivo de origen se muestra desde la línea 26 hasta la 69.</p>
+<p><strong>Explicación de la evidencia:</strong> La función registra cuatro etapas: extracción, limpieza, fragmentación y almacenamiento de vectores. El resumen final permite comprobar cuántos archivos y fragmentos fueron procesados.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/03_ingestion_codigo.png" alt="Etapas de extracción, limpieza e ingesta" /></p>
+<h4>Captura 04. Solapamiento y división del texto limpio</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>rag/chunking.py</code> y revisar <code>split_text</code> y <code>_add_overlap</code>.</p>
+<p><strong>Origen registrado:</strong> <code>rag/chunking.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/04_fragmentacion.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/chunking.py">rag/chunking.py</a>, líneas 66–104.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/04_fragmentacion.html">capturas/04_fragmentacion.html</a>. El archivo de origen se muestra desde la línea 66 hasta la 104.</p>
+<p><strong>Explicación de la evidencia:</strong> El programa divide el texto limpio y añade parte del fragmento anterior al siguiente. Los 500 caracteres son el tamaño previo a añadir hasta 80 caracteres de solapamiento y un espacio.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/04_fragmentacion.png" alt="Solapamiento y división del texto limpio" /></p>
+<h4>Captura 05. Búsqueda híbrida y tratamiento de siglas</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>rag/retriever.py</code> en <code>hybrid_search</code> y <code>search</code>.</p>
+<p><strong>Origen registrado:</strong> <code>rag/retriever.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/05_recuperacion.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/retriever.py">rag/retriever.py</a>, líneas 84–116.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/05_recuperacion.html">capturas/05_recuperacion.html</a>. El archivo de origen se muestra desde la línea 84 hasta la 116.</p>
+<p><strong>Explicación de la evidencia:</strong> La recuperación combina semejanza de vectores y coincidencia de palabras. En preguntas con HGP, MO o RMI, se realiza una búsqueda adicional para incluir la definición sin retirar los principales hitos de la consulta original.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/05_recuperacion.png" alt="Búsqueda híbrida y tratamiento de siglas" /></p>
+<h4>Captura 06. Consumo de Ollama y reglas de respuesta</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>rag/generator.py</code> en <code>generate_answer</code>.</p>
+<p><strong>Origen registrado:</strong> <code>rag/generator.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/06_generacion.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/generator.py">rag/generator.py</a>, líneas 21–50.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/06_generacion.html">capturas/06_generacion.html</a>. El archivo de origen se muestra desde la línea 21 hasta la 50.</p>
+<p><strong>Explicación de la evidencia:</strong> La aplicación crea un cliente Ollama local, envía instrucciones y contexto, y recibe el texto de la respuesta. Las reglas contienen las definiciones del manual, separan EOH de EOC y establecen un máximo de 300 tokens de salida.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/06_generacion.png" alt="Consumo de Ollama y reglas de respuesta" /></p>
+<h4>Captura 07. Registro real de la base de validación</h4>
+<p><strong>Acción para obtenerla:</strong> Ejecutar <code>.venv\Scripts\python.exe cli.py ingest --reset</code> desde la terminal del proyecto.</p>
+<p><strong>Origen registrado:</strong> <code>Docs/evidencias/ingesta.txt</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/07_ingesta.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/ingestion/pipeline.py">ingestion/pipeline.py</a>, líneas 26–63.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/07_ingesta.html">capturas/07_ingesta.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 26.</p>
+<p><strong>Explicación de la evidencia:</strong> La comprobación procesó un archivo, obtuvo un documento limpio y guardó 57 fragmentos. Se utilizó <code>Docs/evidencias/base_validacion</code> como base separada para conservar la aplicación abierta.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/07_ingesta.png" alt="Registro real de la base de validación" /></p>
+<h4>Captura 08. Chat, modelos y base de conocimiento</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>http://127.0.0.1:8502</code> con Ollama y Streamlit en ejecución.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8502/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/08_aplicacion_inicio.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/app/streamlit_app.py">app/streamlit_app.py</a>, líneas 22–68.</p>
+<p><strong>Explicación de la evidencia:</strong> El panel lateral muestra 57 fragmentos, el modelo de vectores, el modelo de generación y los controles de recuperación. La parte central permite elegir una pregunta sugerida o escribir una nueva.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/08_aplicacion_inicio.png" alt="Chat, modelos y base de conocimiento" /></p>
+<h4>Captura 09. Respuesta generada sobre las inspecciones</h4>
+<p><strong>Acción para obtenerla:</strong> Pulsar Consultar pregunta sugerida para la pregunta sobre inspecciones.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8502/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/09_respuesta_inspecciones.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/app/streamlit_app.py">app/streamlit_app.py</a>, líneas 70–107.</p>
+<p><strong>Explicación de la evidencia:</strong> La aplicación recupera información, prepara el contexto y genera una respuesta. La captura se toma después de recibir el texto final. Los valores deben revisarse contra el manual, que indica 3, 26 y 31 días.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/09_respuesta_inspecciones.png" alt="Respuesta generada sobre las inspecciones" /></p>
+<h4>Captura 10. Fuentes y fragmentos que sustentan la respuesta</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir el panel de fragmentos recuperados debajo de la pregunta.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8502/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/10_fuentes_recuperadas.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/app/streamlit_app.py">app/streamlit_app.py</a>, líneas 87–94.</p>
+<p><strong>Explicación de la evidencia:</strong> El panel muestra el nombre del manual, el puntaje de cada fragmento y una vista de su texto. La interfaz limita esa vista a 400 caracteres; el contexto enviado al generador utiliza el fragmento completo.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/10_fuentes_recuperadas.png" alt="Fuentes y fragmentos que sustentan la respuesta" /></p>
+<h4>Captura 11. Consulta de HGP con horas y ciclos equivalentes</h4>
+<p><strong>Acción para obtenerla:</strong> Escribir la pregunta sobre HGP, EOH y EOC en el campo de chat y enviar con Enter.</p>
+<p><strong>Origen registrado:</strong> <code>http://127.0.0.1:8502/</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/11_respuesta_hgp.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/retriever.py">rag/retriever.py</a>, líneas 104–116.</p>
+<p><strong>Explicación de la evidencia:</strong> La definición que debe respetarse es Hot Gas Path Inspection. Los hitos HGP del manual son 30.000 EOH/500 EOC y 90.000 EOH/1.500 EOC. La evidencia permite comprobar si la respuesta cubre toda la pregunta.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/11_respuesta_hgp.png" alt="Consulta de HGP con horas y ciclos equivalentes" /></p>
+<h4>Captura 12. Tiempo, memoria y tokens medidos</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>Docs/evidencias/consumo_resumen.json</code>.</p>
+<p><strong>Origen registrado:</strong> <code>Docs/evidencias/consumo_resumen.json</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/12_consumo_modelos.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/generator.py">rag/generator.py</a>, líneas 24–44.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/12_consumo_modelos.html">capturas/12_consumo_modelos.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 45.</p>
+<p><strong>Explicación de la evidencia:</strong> El archivo reúne tiempo de recuperación y generación, memoria de Python, tokens de entrada y salida informados por Ollama y comparación de contexto. Las duraciones originales de Ollama están en nanosegundos.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/12_consumo_modelos.png" alt="Tiempo, memoria y tokens medidos" /></p>
+<h4>Captura 13. Resultado real de las pruebas del proyecto</h4>
+<p><strong>Acción para obtenerla:</strong> Ejecutar <code>.venv\Scripts\python.exe -m pytest -q</code> en la terminal del proyecto.</p>
+<p><strong>Origen registrado:</strong> <code>Docs/evidencias/pruebas.txt</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/13_pruebas.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/tests/conftest.py">tests/conftest.py</a>, líneas 32–49.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/13_pruebas.html">capturas/13_pruebas.html</a>. El archivo de origen se muestra desde la línea 1 hasta la 6.</p>
+<p><strong>Explicación de la evidencia:</strong> El resultado registrado fue de 26 pruebas aprobadas. Estas pruebas usan vectores de prueba para revisar la lógica sin descargar modelos; la ejecución real de los modelos se comprobó por separado.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/13_pruebas.png" alt="Resultado real de las pruebas del proyecto" /></p>
+<h4>Captura 14. Construcción del contexto enviado al modelo</h4>
+<p><strong>Acción para obtenerla:</strong> Abrir <code>rag/augmentation.py</code> y revisar <code>format_context</code> y <code>build_prompt</code>.</p>
+<p><strong>Origen registrado:</strong> <code>rag/augmentation.py</code>. <strong>Ruta de la imagen:</strong> <code>Docs/capturas/14_contexto.png</code>.</p>
+<p><strong>Código relacionado:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/rag/augmentation.py">rag/augmentation.py</a>, líneas 11–46.</p>
+<p><strong>Vista utilizada para la captura:</strong> <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/14_contexto.html">capturas/14_contexto.html</a>. El archivo de origen se muestra desde la línea 11 hasta la 46.</p>
+<p><strong>Explicación de la evidencia:</strong> Se construyen tres partes: instrucciones, contexto recuperado y pregunta. Cada fragmento incluye su fuente y un número para facilitar la revisión de las afirmaciones de la respuesta.</p>
+<p><img src="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/14_contexto.png" alt="Construcción del contexto enviado al modelo" /></p>
+<p>El archivo <a href="../rag-knowledge-pipeline%20%281%29/rag-knowledge-pipeline/Docs/capturas/manifest.json">manifest.json</a> registra el origen, el tipo de imagen y las líneas de cada captura.</p>
+<h2>5. Conclusiones</h2>
+<p>El proyecto implementa la lectura, limpieza, fragmentación, almacenamiento, recuperación y generación de respuestas sobre el manual. La búsqueda híbrida combina información por significado y por palabras, y la aplicación permite revisar los fragmentos utilizados.</p>
+<p>La ingesta comprobada produjo 57 fragmentos y las 26 pruebas finalizaron correctamente. La generación local mediante Ollama funcionó con el modelo <code>llama3.2:3b</code>, sin una API de pago. La medición mostró que la generación consume más tiempo que la recuperación en la consulta registrada.</p>
+<p>Las correcciones de siglas y unidades mejoraron la preparación del contexto. Sin embargo, se observaron respuestas que requieren revisión o que no incluyen todos los datos solicitados. El resultado debe contrastarse con el manual antes de utilizarlo como información de mantenimiento.</p>
+<h2>6. Recomendaciones</h2>
+<ol>
+<li>Mantener el manual vigente e identificar su versión antes de reconstruir la base.</li>
+<li>Usar el entorno Python del proyecto y conservar <code>requirements-lock.txt</code>.</li>
+<li>Revisar los datos de EOH y EOC, las siglas y las duraciones contra los fragmentos originales.</li>
+<li>Reiniciar la aplicación después de modificar la base para renovar la búsqueda por palabras.</li>
+<li>Medir tokens con el método del modelo para ajustar fragmentos y contexto sin perder información.</li>
+<li>Confirmar que Ollama y el modelo configurado estén disponibles antes de consultar.</li>
+<li>Mantener el modo <code>--no-generate</code> para revisar recuperación y contexto cuando la generación falle o sea incompleta.</li>
+<li>Conservar registros de preguntas, respuestas, fuentes y consumo para comparar cambios.</li>
+<li>Revisar manualmente respuestas sobre mantenimiento; los puntajes y la temperatura no prueban su exactitud.</li>
+<li>Repetir las mediciones en el equipo de uso, porque los tiempos y la memoria dependen del estado del sistema y del modelo cargado.</li>
+</ol>
+</main></html>

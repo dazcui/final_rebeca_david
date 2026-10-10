@@ -1,0 +1,290 @@
+[
+  {
+    "pregunta": "¿Cuántos días duran las inspecciones A, B y C de las turbinas SGT-800?",
+    "respuesta": "Según el manual, las inspecciones A, B y C de las turbinas SGT-800 tienen las siguientes duraciones de referencia:\n\n* Inspección A: 3 días\n* Inspección B: 26 días\n* Inspección C: 31 días\n\nEstas duraciones se mencionan en el fragmento 3.2. Tiempos de parada del manual.",
+    "fragmentos": [
+      {
+        "text": "en documentos técnicos específicos antes de ejecutar trabajos.\n\n10. Conclusiones El programa presentado estructura el mantenimiento preventivo de las SGT-800 mediante tres niveles de inspección con paradas de referencia de 3, 26 y 31 días, complementados por un esquema de cambio de partes en hitos de horas y ciclos equivalentes. Para las SST-400, define inspecciones a 12.500 EOH, revisiones parciales a 25.000 EOH, revisiones totales a 50.000 EOH y evaluación de vida útil a 100.000 EOH",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.7908815741539001
+      },
+      {
+        "text": "ances específicos debe utilizarse el cronograma vigente.\n\n3.2. Tiempos de parada | Nivel | Parada indicada, incluido enfriamiento | Descripción general |\n|---|---:|---|\n| A / RMI | 3 días | Verificaciones, inspección visual y boroscópica |\n| B / HGP | 26 días | Inspección ampliada, especialmente del trayecto de gases calientes |\n| C / MO | 31 días | Inspección mayor y ensayos no destructivos |\n\nEstos son tiempos de referencia de la presentación; no se presentan como garantías de duración para todas las condiciones de campo.\n\n3.3. Actividades comunes",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.7655557512661705
+      },
+      {
+        "text": "amado, reformulado y ejecutado; para SUR41 se muestran programado y reformulado. Para 2027, se representan SUR11 y SUR12 a 80.000 EOH (reformuladas, tipo A); SUR21 y SUR22 a 80.000 EOH (programadas, tipo A); SUR31 y SUR32 a 30.000 EOH (programadas, tipo B, 26 días); y SUR42 a 50.000 EOH (programada, tipo A). El calendario permite identificar la coexistencia de inspecciones menores y dos intervenciones de mayor duración.\n\n7.3. ERI: turbinas de gas",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.7359251037835302
+      },
+      {
+        "text": "tual, horas efectivas de parada o actas de recepción.\n\n7.2. SUR: turbinas de gas Para 2026, se muestran las unidades SUR21, SUR22, SUR41 y SUR42, con intervenciones de tipo A, duración de referencia de 3 días y alcances indicados de 70.000, 72.000, 41.000 y 40.000 EOH, respectivamente. Para SUR21, SUR22 y SUR42 aparecen estados programado, reformulado y ejecutado; para SUR41 se muestran programado y reformulado.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.7032453756733723
+      },
+      {
+        "text": "iones menores y dos intervenciones de mayor duración.\n\n7.3. ERI: turbinas de gas Para 2026, el cronograma contiene ERI31, ERI32, ERI41, ERI42, ERI51 y ERI52. ERI31 figura con 40.000 EOH y tipo A; ERI32 con 30.000 EOH y tipo B (26 días); ERI41, ERI42, ERI51 y ERI52 con 30.000 EOH y tipo A (3 días). Se observan barras programadas y reformuladas, así como registros de ejecución para varias unidades.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.6954058004260082
+      }
+    ]
+  },
+  {
+    "pregunta": "¿Qué incluye el contrato Offshore y qué incluye el Onshore?",
+    "respuesta": "Según el contexto recuperado, el contrato Offshore incluye la provisión de repuestos, partes, accesorios y consumibles, así como la remanufacturación de partes, asistencia técnica durante 24 horas, análisis remoto y capacitación. \n\nPor otro lado, el contrato Onshore incluye la provisión de mano de obra calificada.",
+    "fragmentos": [
+      {
+        "text": "vos. El entrenamiento se presenta como formación en turbinas de gas SGT-700/800. 2.1. Contrato Offshore\n\nLa presentación atribuye al contrato Offshore la provisión de repuestos, partes, accesorios y consumibles, así como la remanufacturación de partes. También incluye asistencia técnica durante 24 horas, análisis remoto y capacitación. Por lo tanto, en la descripción de la presentación, este contrato concentra el suministro material y el soporte técnico remoto y formativo.\n\n2.2. Contrato Onshore",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.7812044143676757
+      },
+      {
+        "text": "inistro material y el soporte técnico remoto y formativo.\n\n2.2. Contrato Onshore El alcance expresamente indicado para el contrato Onshore es la provisión de mano de obra calificada. La presentación no define categorías laborales, tarifas, límites de jornada ni reglas de facturación de trabajos adicionales; esos asuntos requieren consulta del contrato correspondiente.\n\n2.3. Coordinación de ambos alcances",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.6968002533892432
+      },
+      {
+        "text": "ocumentos técnicos y contractuales vigentes.\n\n11. Trazabilidad a la presentación | Sección de este manual | Diapositiva de origen |\n|---|---|\n| Introducción y objeto | 1 |\n| Esquema LTP, Offshore y Onshore | 2 |\n| Secuencia SGT-800 | 3 |\n| Alcances y duraciones SGT-800 | 4 |\n| Cambio de partes SGT-800 | 5 |\n| Sistemas auxiliares | 6 |\n| Secuencia SST-400 | 7 |\n| Alcances SST-400 y vida útil | 8 |\n| Cronograma SUR | 9 |\n| Cronograma ERI | 10 |\n| Cronograma WAR | 11 |\n| Confiabilidad operativa | 12 |\n| Identidad institucional | 13 |\n\n---",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.4520287055417188
+      },
+      {
+        "text": "eñalan cuando son necesarias.\n\n2. Esquema contractual de soporte (diapositiva 2) El esquema de servicio de largo plazo (LTP) mostrado en la presentación reúne mantenimientos programados, suministro de partes, asistencia técnica, diagnóstico remoto (RDS), acceso a partes de emergencia y entrenamiento. Los mantenimientos programados incluyen planificación anticipada y personal calificado. El suministro de partes comprende repuestos preventivos, consumibles y reacondicionamiento de partes. La asistencia técnica incluye atención 24/7 y consultas técnicas",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.3899735440951775
+      },
+      {
+        "text": "ación de regulación, vigilancia y protección, y atención a corrosión y suciedad. Durante la parada se desmontan y verifican válvulas de cierre rápido, retención y regulación; se revisan el acoplamiento y la alineación turbina-máquina; se contempla análisis boroscópico y control de la pieza identificada en la presentación como AD, si es posible; y se controla el sistema de vapor de sellado y drenaje. La diapositiva no desarrolla el significado de la sigla AD.\n\n6.4. Revisión total de 50.000 EOH",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.28597358165292
+      }
+    ]
+  },
+  {
+    "pregunta": "¿A cuántas EOH se realizan las inspecciones, revisiones parciales y totales de las SST-400?",
+    "respuesta": "Según el contexto recuperado, se realizan las siguientes inspecciones y revisiones a las siguientes horas equivalentes (EOH) para las SST-400:\n\n* Inspecciones: a 12.500 EOH\n* Revisiones parciales: a 25.000 EOH\n* Revisiones totales: a 50.000 EOH",
+    "fragmentos": [
+      {
+        "text": "en documentos técnicos específicos antes de ejecutar trabajos.\n\n10. Conclusiones El programa presentado estructura el mantenimiento preventivo de las SGT-800 mediante tres niveles de inspección con paradas de referencia de 3, 26 y 31 días, complementados por un esquema de cambio de partes en hitos de horas y ciclos equivalentes. Para las SST-400, define inspecciones a 12.500 EOH, revisiones parciales a 25.000 EOH, revisiones totales a 50.000 EOH y evaluación de vida útil a 100.000 EOH",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.8259125828742981
+      },
+      {
+        "text": "000 EOH, revisiones totales a 50.000 EOH y evaluación de vida útil a 100.000 EOH Los cronogramas SUR, ERI y WAR permiten comparar lo programado, lo reformulado y lo ejecutado durante 2026–2027. La confiabilidad operativa reportada es 96,89 %, sin metodología de cálculo visible.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5778387624072856
+      },
+      {
+        "text": "amado, reformulado y ejecutado; para SUR41 se muestran programado y reformulado. Para 2027, se representan SUR11 y SUR12 a 80.000 EOH (reformuladas, tipo A); SUR21 y SUR22 a 80.000 EOH (programadas, tipo A); SUR31 y SUR32 a 30.000 EOH (programadas, tipo B, 26 días); y SUR42 a 50.000 EOH (programada, tipo A). El calendario permite identificar la coexistencia de inspecciones menores y dos intervenciones de mayor duración.\n\n7.3. ERI: turbinas de gas",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5202524859948158
+      },
+      {
+        "text": "membranas, juntas y piezas de desgaste.\n\n6.5. Examen de vida útil a 100.000 EOH El examen incluye pruebas de grietas por ultrasonido y dureza, medición de espesores de pared, exámenes metalográficos y cálculo de vida útil remanente. Según la presentación, las decisiones posibles a partir del resultado son continuar la operación, reducir los intervalos de intervención, operar con menor carga o sustituir piezas. Los criterios técnicos de decisión no se cuantifican en la lámina.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.48385576054690227
+      },
+      {
+        "text": "os de rozamiento en los laberintos del eje.\n\n6.3. Revisión parcial de 25.000 EOH Incluye todas las tareas de la inspección de 12.500 EOH y trabajos adicionales de desmontaje y control. Comprende revisión de cojinetes (holguras, laberintos y desplazamiento axial), comprobación del giro concéntrico, verificación de regulación, vigilancia y protección, y atención a corrosión y suciedad.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.42973841428756715
+      }
+    ]
+  },
+  {
+    "pregunta": "¿Qué significa HGP y en qué hitos EOH y EOC está previsto?",
+    "respuesta": "Según el contexto recuperado, HGP significa \"inspección de la trayectoria de gases calientes\" (Hot Gas Path Inspection). Este tipo de inspección se realiza en los hitos de 30.000 y 90.000 horas equivalentes de operación (EOH).\n\nEn cuanto a EOH y EOC, se menciona que la tabla de cambio de partes vincula hitos de mantenimiento con horas y ciclos equivalentes. Los encabezados muestran 0, 30.000, 60.000, 90.000 y 120.000 EOH, correspondientes a 0, 500, 1.000, 1.500 y 2.000 EOC, respectivamente.",
+    "fragmentos": [
+      {
+        "text": "presentación no especifica técnicas NDT particulares ni criterios de aceptación. 4. Programa de cambio de partes SGT-800 (diapositiva 5)\n\nLa tabla de cambio de partes vincula hitos de mantenimiento con horas y ciclos equivalentes. Los encabezados muestran 0, 30.000, 60.000, 90.000 y 120.000 EOH, correspondientes a 0, 500, 1.000, 1.500 y 2.000 EOC, respectivamente. En los hitos de 30.000 y 90.000 EOH se señala HGP, y en 60.000 y 120.000 EOH se señala MO.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.6671691179275513
+      },
+      {
+        "text": "os de 30.000 y 90.000 EOH se señala HGP, y en 60.000 y 120.000 EOH se señala MO. La tabla usa tres estados: Original (componente original conservado), New (componente nuevo) y Rec (componente reacondicionado o recuperado, según la abreviatura mostrada). En el primer hito HGP se observan cambios a nuevos de quemadores de gas, cámara de combustión, álabe 1, álabe 2, guía 1, escudo térmico 1, placas internas y externas GV1 y guía 2. En hitos posteriores algunos componentes pasan a Rec y otros vuelven a New.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.6443363190040616
+      },
+      {
+        "text": "iento 2026–2027 (diapositivas 9, 10 y 11)\n\n7.1. Cómo interpretar los cronogramas Cada cronograma presenta la unidad, el alcance en EOH, el escenario, el tipo de inspección, la duración aproximada y la ubicación de la intervención en los meses del año. La leyenda de colores distingue:\n\n- Azul — Programado: fecha o período previsto inicialmente.\n- Naranja — Reformulado: fecha o período revisado.\n- Verde — Ejecutado: intervención reflejada como realizada.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5276921037140567
+      },
+      {
+        "text": "3.5. Nivel B / HGP Se efectúa inspección visual de carcasa, quemadores y cámara de combustión, álabes guía y paletas de turbina, sistemas auxiliares, generador eléctrico, acoplamientos y engranajes. Se añade inspección boroscópica de paletas y estator del compresor. Para reemplazos o rehabilitación, la presentación remite expresamente al programa de reemplazos. La intervención concentra una revisión más amplia de los componentes expuestos al flujo caliente y de los elementos mecánicos relacionados.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.49182656785941864
+      },
+      {
+        "text": "nto de turbinas de gas SGT-800 (diapositivas 3 y 4)\n\n3.1. Clases de intervención La línea temporal de la diapositiva 3 representa intervenciones recurrentes en función de horas equivalentes de operación, expresadas como EOH × 1.000. Su leyenda diferencia:\n\n- A / RMI: inspección tipo A o inspección remota menor (Remote Minor Inspection), según la leyenda.\n- B / HGP: inspección tipo B, asociada a la inspección de la trayectoria de gases calientes (Hot Gas Path Inspection).\n- C / MO: inspección tipo C, denominada inspección mayor (Major Overhaul).",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.4
+      }
+    ]
+  },
+  {
+    "pregunta": "¿Qué intervención y duración se indican para WAR42 en 2027?",
+    "respuesta": "Según el contexto recuperado, la intervención de WAR42 se ubica en el último trimestre de 2027 y tiene una duración de 31 días.",
+    "fragmentos": [
+      {
+        "text": "n y ejecución. La intervención de WAR42 es la parada mayor destacada en ese año. Para 2027, se incluyen WAR05 (70.000 EOH, tipo A), WAR11 (80.000 EOH, tipo A, reformulada), WAR12 (80.000 EOH, tipo A), WAR21 (80.000 EOH, tipo A, reformulada), WAR22 (80.000 EOH, tipo A), WAR32 (50.000 EOH, tipo A) y WAR42 (60.000 EOH, tipo C, 31 días). La intervención tipo C de WAR42 se ubica en el último trimestre de 2027.\n\n7.5. Uso del cronograma para la gestión",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.8521758794784546
+      },
+      {
+        "text": "s intervenciones durante julio y una hacia diciembre.\n\n7.4. WAR: turbinas de gas Para 2026, se muestran WAR11 (80.000 EOH, tipo A), WAR12 (70.000 EOH, tipo A), WAR21 (80.000 EOH, tipo A), WAR22 (70.000 EOH, tipo A), WAR31 (50.000 EOH, tipo A), WAR41 (50.000 EOH, tipo A) y WAR42 (50.000 EOH, tipo C, 31 días). En varias filas figuran los tres estados de planificación, reformulación y ejecución. La intervención de WAR42 es la parada mayor destacada en ese año.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.6200083335594326
+      },
+      {
+        "text": "rogramadas y reformuladas, así como registros de ejecución para varias unidades. Para 2027, se muestran cinco intervenciones programadas de tipo A, con duración de 3 días: ERI31 a 50.000 EOH y ERI41, ERI42, ERI51 y ERI52 a 40.000 EOH. La distribución visual ubica la mayor parte de estas intervenciones durante julio y una hacia diciembre.\n\n7.4. WAR: turbinas de gas",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5482443694684489
+      },
+      {
+        "text": "iento 2026–2027 (diapositivas 9, 10 y 11)\n\n7.1. Cómo interpretar los cronogramas Cada cronograma presenta la unidad, el alcance en EOH, el escenario, el tipo de inspección, la duración aproximada y la ubicación de la intervención en los meses del año. La leyenda de colores distingue:\n\n- Azul — Programado: fecha o período previsto inicialmente.\n- Naranja — Reformulado: fecha o período revisado.\n- Verde — Ejecutado: intervención reflejada como realizada.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5391147455625833
+      },
+      {
+        "text": "amado, reformulado y ejecutado; para SUR41 se muestran programado y reformulado. Para 2027, se representan SUR11 y SUR12 a 80.000 EOH (reformuladas, tipo A); SUR21 y SUR22 a 80.000 EOH (programadas, tipo A); SUR31 y SUR32 a 30.000 EOH (programadas, tipo B, 26 días); y SUR42 a 50.000 EOH (programada, tipo A). El calendario permite identificar la coexistencia de inspecciones menores y dos intervenciones de mayor duración.\n\n7.3. ERI: turbinas de gas",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5175032636936139
+      }
+    ]
+  },
+  {
+    "pregunta": "¿Qué significan los colores azul, naranja y verde de los cronogramas?",
+    "respuesta": "Según el Manual del Programa de Mantenimiento Preventivo de, turbinas SGT-800 y SST-400, los colores azul, naranja y verde en los cronogramas indican:\n\n* Azul: Programado (fecha o período previsto inicialmente)\n* Naranja: Reformulado (fecha o período revisado)\n* Verde: Ejecutado (intervención reflejada como realizada)\n\nEstos colores se utilizan para representar el estado actual de los cronogramas y permiten visualizar la planificación, la reformulación y la ejecución de las intervenciones.",
+    "fragmentos": [
+      {
+        "text": "iento 2026–2027 (diapositivas 9, 10 y 11)\n\n7.1. Cómo interpretar los cronogramas Cada cronograma presenta la unidad, el alcance en EOH, el escenario, el tipo de inspección, la duración aproximada y la ubicación de la intervención en los meses del año. La leyenda de colores distingue:\n\n- Azul — Programado: fecha o período previsto inicialmente.\n- Naranja — Reformulado: fecha o período revisado.\n- Verde — Ejecutado: intervención reflejada como realizada.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.7729080200195313
+      },
+      {
+        "text": "o período revisado.\n- Verde — Ejecutado: intervención reflejada como realizada. Las barras muestran desplazamientos entre planificación inicial y reformulación, así como la ejecución cuando está registrada. Los cronogramas son una fotografía de planificación y seguimiento, no prueba por sí solos de cumplimiento contractual, horas efectivas de parada o actas de recepción.\n\n7.2. SUR: turbinas de gas",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.43465979906064284
+      },
+      {
+        "text": "dad operativa de 96,89 %, sin indicar período de medición ni fórmula de cálculo. Este manual desarrolla el contenido visible de cada diapositiva, identifica los tipos de inspección y revisión, detalla los componentes que deben examinarse y explica cómo leer los cronogramas. Los términos y valores reproducidos proceden de la presentación. Las aclaraciones editoriales se señalan cuando son necesarias.\n\n2. Esquema contractual de soporte (diapositiva 2)",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.29325354537775816
+      },
+      {
+        "text": "ion).\n- C / MO: inspección tipo C, denominada inspección mayor (Major Overhaul). El gráfico ilustra una secuencia repetitiva de inspecciones menores, intermedias y mayores. No debe interpretarse como un calendario definitivo por unidad: para fechas y alcances específicos debe utilizarse el cronograma vigente.\n\n3.2. Tiempos de parada",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.2588172912597656
+      },
+      {
+        "text": "e ubica en el último trimestre de 2027.\n\n7.5. Uso del cronograma para la gestión La lectura conjunta de los tres emplazamientos permite reconocer ventanas de parada, prever la disponibilidad de cuadrillas y partes y contrastar el programa inicial con el efectivamente ejecutado. No obstante, los gráficos presentan algunos intervalos de barras y rótulos de fechas que no equivalen directamente a la duración nominal indicada en la columna correspondiente",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.24349633455276487
+      }
+    ]
+  },
+  {
+    "pregunta": "¿Qué componentes se someten a ensayos no destructivos en el nivel C?",
+    "respuesta": "Según el Manual del Programa de Mantenimiento Preventivo de, turbinas SGT-800 y SST-400, en el nivel C / MO, se realizan ensayos no destructivos (NDT) en los siguientes componentes:\n\n* Paletas del compresor\n* Estator del compresor\n* Anillos de turbina\n* Paletas de turbina\n* Discos de turbina\n* Pernos de turbina\n\nEsto se indica en el fragmento 1 del contexto recuperado, específicamente en el párrafo que describe el alcance de las verificaciones y inspecciones indicadas para el nivel C / MO.",
+    "fragmentos": [
+      {
+        "text": "3.6. Nivel C / MO Se realizan las verificaciones previas y las inspecciones visuales indicadas para carcasa, quemadores, cámara de combustión, álabes guía y paletas de turbina, auxiliares, generador, acoplamientos y engranajes. El alcance agrega ensayos no destructivos (NDT) de paletas y estator del compresor, anillos de turbina, paletas y discos de turbina y pernos de turbina. Los reemplazos y rehabilitaciones se determinan consultando el programa de reemplazos",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.7622893691062927
+      },
+      {
+        "text": "ón de operación antes de abrir o intervenir los componentes.\n\n3.4. Nivel A / RMI La inspección visual comprende carcasa, quemadores y cámara de combustión, sistemas auxiliares y generador eléctrico. La inspección mediante boroscopio comprende cavidades de paletas y estator del compresor, cámara de combustión, quemadores, paletas y estator de la turbina y álabes de la turbina. Este nivel permite examinar internamente componentes sin exigir en la presentación el alcance de desmontaje de una inspección mayor. La tabla no prescribe reemplazos específicos para el nivel A.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5644585728804588
+      },
+      {
+        "text": "ntías de duración para todas las condiciones de campo.\n\n3.3. Actividades comunes Los tres niveles incluyen una comprobación a distancia en línea antes de la inspección y una verificación del sistema de control e instrumentos. La evaluación previa permite contar con información de operación antes de abrir o intervenir los componentes.\n\n3.4. Nivel A / RMI",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.4934967650124008
+      },
+      {
+        "text": "mponentes expuestos al flujo caliente y de los elementos mecánicos relacionados. 3.6. Nivel C / MO",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.49055446743483344
+      },
+      {
+        "text": "ances específicos debe utilizarse el cronograma vigente.\n\n3.2. Tiempos de parada | Nivel | Parada indicada, incluido enfriamiento | Descripción general |\n|---|---:|---|\n| A / RMI | 3 días | Verificaciones, inspección visual y boroscópica |\n| B / HGP | 26 días | Inspección ampliada, especialmente del trayecto de gases calientes |\n| C / MO | 31 días | Inspección mayor y ensayos no destructivos |\n\nEstos son tiempos de referencia de la presentación; no se presentan como garantías de duración para todas las condiciones de campo.\n\n3.3. Actividades comunes",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.387201277263269
+      }
+    ]
+  },
+  {
+    "pregunta": "¿Qué confiabilidad operativa se informa y qué datos faltan para interpretar ese valor?",
+    "respuesta": "La confiabilidad operativa informada es del 96,89%. Para interpretar este valor, faltan la población de equipos, la fuente de datos y la fórmula utilizada para calcular el porcentaje.",
+    "fragmentos": [
+      {
+        "text": "8. Confiabilidad operativa (diapositiva 12) La presentación informa una confiabilidad operativa de 96,89 %. El valor aparece como indicador general de cierre y pone de relieve la importancia de coordinar la programación preventiva con la continuidad del servicio. No se especifican el período evaluado, la población de equipos, la fuente de datos ni la fórmula utilizada. Por ello no es posible deducir de manera fiable horas de indisponibilidad, disponibilidad contractual ni resultados por unidad a partir de este único porcentaje.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.862844455242157
+      },
+      {
+        "text": "ervar las condiciones de funcionamiento de los equipos y administrar sus paradas La presentación concluye mostrando una confiabilidad operativa de 96,89 %, sin indicar período de medición ni fórmula de cálculo.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5320235223361793
+      },
+      {
+        "text": "promisos de parada debe confirmarse la versión detallada y vigente del programa. 8. Confiabilidad operativa (diapositiva 12)",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.5105321886511973
+      },
+      {
+        "text": "000 EOH, revisiones totales a 50.000 EOH y evaluación de vida útil a 100.000 EOH Los cronogramas SUR, ERI y WAR permiten comparar lo programado, lo reformulado y lo ejecutado durante 2026–2027. La confiabilidad operativa reportada es 96,89 %, sin metodología de cálculo visible.",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.4978453422699993
+      },
+      {
+        "text": "onfiabilidad operativa reportada es 96,89 %, sin metodología de cálculo visible. La presentación permite elaborar una guía descriptiva de planificación y alcance, pero no un procedimiento de ejecución autosuficiente. Su aplicación exige verificar los documentos técnicos y contractuales vigentes.\n\n11. Trazabilidad a la presentación",
+        "source": "MANUAL_PROGRAMA_MANTENIMIENTO_PREVENTIVO.md",
+        "page": null,
+        "score": 0.4227978944778442
+      }
+    ]
+  }
+]

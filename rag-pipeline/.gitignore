@@ -1,0 +1,55 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Instalaciones locales, caches y pesos descargados
+.cache/
+.runtime/
+.tools/
+.downloads/
+*.safetensors
+*.gguf
+*.onnx
+*.pt
+*.pth
+*.ckpt
+
+# Variables de entorno locales
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Base de datos vectorial y datos procesados (se regeneran con `ingest`)
+data/chroma_db/
+data/processed/*
+!data/processed/.gitkeep
+Docs/evidencias/base_validacion/
+
+# Registros y archivos temporales
+*.log
+*.log.*
+*.tmp
+*.temp
+*~
+
+# Sistema
+.DS_Store
+Thumbs.db
+Desktop.ini

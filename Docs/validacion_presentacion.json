@@ -1,0 +1,12 @@
+[
+  {
+    "informe": "Informe_chucking_embeddings",
+    "imagenes_cargadas": 12,
+    "ancho_pagina": 1440
+  },
+  {
+    "informe": "Informe_rag_pipeline",
+    "imagenes_cargadas": 14,
+    "ancho_pagina": 1440
+  }
+]

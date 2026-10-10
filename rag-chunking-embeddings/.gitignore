@@ -1,0 +1,55 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Cache de Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Base de datos vectorial local (se regenera con `python -m src.ingest`)
+vectorstore/
+
+# Cache de modelos descargados (Hugging Face / torch)
+.cache/
+.runtime/
+.tools/
+.downloads/
+*.safetensors
+*.gguf
+*.onnx
+*.pt
+*.pth
+*.ckpt
+
+# Base temporal utilizada para documentar la ejecucion
+Docs/evidencias/base_validacion/
+
+# Variables de entorno locales
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+# Registros y archivos temporales
+*.log
+*.log.*
+*.tmp
+*.temp
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
